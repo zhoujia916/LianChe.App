@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" href="css/common.css" />
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<style>
+body,html{height:100%;width: 100%;}
+.active:after {position: absolute;display: block;content: ' ';height: 2px;width: 100%;background: #fff;border-bottom: 1px solid #dedede;bottom: 0;}
+.mui-content,.mui-slider,.mui-slider-group,.mui-control-content {position: relative;height: 100%;}
+.mui-slider .mui-segmented-control.mui-segmented-control-inverted~.mui-slider-group .mui-slider-item {border: none;}
+.mui-segmented-control.mui-segmented-control-inverted~.mui-slider-progress-bar {background-color: #fff;}
+.mui-slider-progress-bar {height: 3px;border-bottom:1px solid #dedede}
+.mui-scrollbar-vertical {top: 0;right: 2px;bottom: 2px;width: 4px;}
+.mui-scrollbar-indicator {border-radius: 0;width: 150%;background: rgba(213, 213, 213, .9);}
+.mui-slider:before{content: ' ';display: block;position: absolute;width: 100%;height: 3px;top: 0;left: 0;background-color: #03a9f4;}
+.mui-col-xs-2{width:20%}.refresh{position:fixed;left:0;bottom:0;z-index:1000}
+.load{position:fixed;right:0;bottom:0;z-index:1000}
+.mui-pull-bottom-tips{text-align:center;font-size:15px;line-height:40px;color:#777}
+.mui-slider-indicator.mui-segmented-control{background-color:#efeff4}
+.mui-scroll .mui-loading{margin-top:150px;background-color:#f3f3f3}
+.nav{position:relative;height:27px;line-height:27px;width:100%;background:RGB(3,169,244)}
+.nav>div{height:100%;position:relative;width:20%;float:left;text-align:center}
+.nav>div h1{margin: 0;display: block;font-size:13.5px;color:#fff}
+		</style>
+	</head>
+	<body>
+		<header class="pz-header" style="position: relative">
+			<div class='pz-icon-l mui-action-back'><span></span></div>
+			<div id='title' class="pz-title">我的销车</div>
+		</header>
+		<div class='nav'>
+			<div data-idx=0>
+				<h1>全部</h1></div>
+			<div data-idx=1>
+				<h1>待付款</h1></div>
+			<div data-idx=2>
+				<h1>已付款</h1></div>
+			<div data-idx=3>
+				<h1>已成交</h1></div>
+			<div data-idx=4>
+				<h1>已取消</h1></div>
+		</div>
+		<div class="mui-content">
+			<div id="slider" class="mui-slider">
+				<div id="sliderSegmentedControl" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+				</div>
+				<div id="sliderProgressBar" class="mui-slider-progress-bar mui-col-xs-2"></div>
+				<div class="mui-slider-group">
+					<div class="mui-slider-item mui-control-content mui-active">
+						<div id="scroll0" class="mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<ul class="mui-table-view">
+									<div class="mui-loading">
+										<div class="mui-spinner">
+										</div>
+									</div>
+								</ul>
+							</div>
+						</div>
+					</div>
+					
+					<div class="mui-slider-item mui-control-content">
+						<div id="scroll1" class="mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<ul class="mui-table-view">
+									<div class="mui-loading">
+										<div class="mui-spinner">
+										</div>
+									</div>
+								</ul>
+							</div>
+						</div>
+					</div>
+					
+					<div class="mui-slider-item mui-control-content">
+						<div id="scroll2" class="mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<ul class="mui-table-view">
+									<div class="mui-loading">
+										<div class="mui-spinner">
+										</div>
+									</div>
+								</ul>
+							</div>
+						</div>
+					</div>
+					
+					<div class="mui-slider-item mui-control-content">
+						<div id="scroll3" class="mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<ul class="mui-table-view">
+									<div class="mui-loading">
+										<div class="mui-spinner">
+										</div>
+									</div>
+								</ul>
+							</div>
+						</div>
+					</div>
+					
+					<div class="mui-slider-item mui-control-content">
+						<div id="scroll4" class="mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<ul class="mui-table-view">
+									<div class="mui-loading">
+										<div class="mui-spinner">
+										</div>
+									</div>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/common.js" ></script>
+	<script type="text/javascript" src="js/mui.pullToRefresh.js" ></script>
+	<script type="text/javascript" src="js/mui.pullToRefresh.material.js" ></script>
+	<script type="text/javascript" src="js/append-html.js" ></script>
+	<script type="text/javascript" charset="UTF-8">
+		mui.init();
+		web.scroll('.mui-scroll-wrapper');
+		
+		var gallery=mui('#slider');
+		
+		/*上拉加载，下拉刷新*/
+		mui('.mui-content,.mui-slider,.mui-slider-group,.mui-control-content').each(function(){
+			this.style.height=web.bodyHeight()-71+'px';
+		})
+		mui.each(document.querySelectorAll('.mui-slider-group .mui-scroll'), function(index, pullRefreshEl) {
+			mui(pullRefreshEl).pullToRefresh({
+				/*down: {
+					callback: downToRefresh
+				},*/
+				up: {
+					callback: upToLoad
+				}
+			});
+		}); 
+		/*影藏所有.mui-pull-bottom-tips*/
+		hideMuiTip('all');
+		
+		var now=0,param={};
+		param.pageSize=10;
+		var pageIndexList=[1,1,1,1,1];
+		var firstRequst=[1,1,1,1,1];
+		
+		mui.plusReady(function(){
+			app.hiddenIndicator()
+			setTimeout(function(){
+				plusReady()
+			},270);
+		})
+		
+		/*slide触发请求*/
+		function plusReady(){
+			param.sellerId=web.getItem('userId');
+			param.clientStatus=now; 
+			param.markId=1;
+			//立即请求一次全部
+			upToLoad();
+			
+			web.qs('#slider').addEventListener('slide', function(e) {
+				hideMuiTip(now)
+				web.qs('#scroll'+now+' .mui-table-view').innerHTML='<div class="mui-loading"><div class="mui-spinner"></div></div>';
+				mui('#scroll'+now+' .mui-scroll').pullToRefresh().refresh(true);
+				param.clientStatus=now=e.detail.slideNumber;
+				pageIndexList[now]=1
+				firstRequst[now]=1
+				upToLoad();
+				//if(pageIndexList[now]==1){
+				//}
+			});
+		}
+		
+		mui('.nav').on('tap','div',function(){
+			gallery.slider().gotoItem(this.dataset.idx);
+		});
+		
+		function upToLoad(){//下拉加载
+			param.markId=2,param.carId=0,handlerList=null;
+			param.pageIndex=pageIndexList[now];
+			var list=web.qsa('#scroll'+now+' li');
+			if(list.length!=0){
+				param.carId=list[list.length-1].dataset.carid
+			}
+			post({
+				url: autouserListCar,
+				data: param,
+				success :function(data){
+					if (data.data&&data.data.length!=0) {
+						//param.clientStatus=now;
+						/*如果当前tab是 首次请求，去除loading动画*/
+						if(pageIndexList[now]==1){
+							web.qs('#scroll'+now+' .mui-table-view').innerHTML='';
+							//upToLoad();
+						}
+						appendHtml({
+							data: data.data,
+							parent: web.qs('#scroll'+now+' .mui-table-view'),
+							type: 'myCar',
+							upToLoad : false
+						},false);
+						mui('#scroll'+now+' .mui-scroll').pullToRefresh().endPullUpToRefresh(false);
+						/*显示当前下拉加载tip*/
+						showMuiTip(now);
+						firstRequst[now]=0;
+						pageIndexList[now]++;
+					} else {
+						if(pageIndexList[now]==1){
+							web.qs('#scroll'+now+' .mui-table-view').innerHTML='';
+						}
+						mui('#scroll'+now+' .mui-scroll').pullToRefresh().endPullUpToRefresh(true);
+						
+						/*显示当前下拉加载tip*/
+						//if(web.qs('#scroll'+now+' .mui-table-view').children.length==0)
+						if(firstRequst[now]){
+							firstRequst[now]=0;
+							firstInNoMsg(now);
+						}else{
+							showMuiTip(now);
+						}
+					}
+				}
+			});
+		}
+		
+		
+		/*function downToRefresh(){
+			param.markId=1;carId=0,handlerList=null;
+			var list=web.qsa('#scroll'+now,'li');
+			if(list.length!=0){
+				param.carId=list[0].dataset.carid
+			}
+			if(now==1){
+				handlerList={
+					'cancel-order':function(){
+						
+					},
+					'pay-order':function(){
+						
+					}
+				};
+			}
+			post({
+				url: autouserListCar, 
+				data: param,
+				success :function(data){//
+					if (data.data) {
+						appendHtml({
+							data: data.data,
+							parent: web.qs('.show-favs'),
+							type: 'myFavs',
+							upToLoad : false
+						},handlerList);
+						mui('#scroll'+now+' .mui-scroll').pullToRefresh().endPullDownToRefresh();
+					} else {
+						mui('#scroll'+now+' .mui-scroll').pullToRefresh().endPullDownToRefresh();
+					}
+				}
+			})
+		}*/
+		
+		function firstInNoMsg(idx){
+			var tips=web.qsa('.mui-pull-bottom-tips');
+			web.setStyle(tips[idx],{display:'block',marginTop:'150px'});
+		}
+		
+		function hideMuiTip(idx){
+			var tips=web.qsa('.mui-pull-bottom-tips');
+			if(idx=='all'){
+				mui.each(tips,function(idx,item){
+					web.setStyle(item,{'display':'none'});
+				})
+			}else{
+				web.setStyle(tips[idx],{'display':'none'});
+			}
+		}
+		
+		function showMuiTip(idx){
+			var tips=web.qsa('.mui-pull-bottom-tips');
+			web.setStyle(tips[idx],{display:'block',marginTop:'0'});
+		}
+		
+		var oMask=new Mask();
+		var reject=pzConfirm('您确定要拒绝该订单吗？',oMask);
+		var notifyReceive=pzConfirm('您要提醒买家收货？',oMask);
+		var contactBuyer=pzConfirm('您要联系买家？',oMask);
+		/*卖家拒绝交易*/
+		mui('.mui-scroll').on('tap','.car-item .reject',function(){
+			var _this=this,contianer=this.parentNode.parentNode;
+			oMask.callback=function(){
+				post({
+					url: autoorderReject,
+					data: {
+						"orderId": contianer.dataset.orderid,
+						"sellerId": web.getItem('userId'),
+					},
+					success : function(data){
+						pzToast('拒绝订单成功！',true);
+						forEvalJS.listRefresh(now);
+					}
+				})
+			}
+			oMask.create().append(reject);
+		})
+		/*同意交易*/
+		mui('.mui-scroll').on('tap','.car-item .accept',function(){
+			var _this=this,contianer=this.parentNode.parentNode;
+			app.openVW('order-pay.html');
+			app.VW('order-pay.html').addEventListener('loaded',function(){
+				mui.fire(app.VW('order-pay.html'),'payOrder',{
+					orderId: contianer.dataset.orderid,
+					sellerId: web.getItem('userId'),
+					slideIndex: now,
+					deposit: contianer.dataset.deposit
+				})
+			},false);
+		})
+		/*联系买家*/
+		mui('.mui-scroll').on('tap','.car-item .contact-buyer',function(){
+			var _this=this,contianer=this.parentNode.parentNode;
+			contactBuyer.querySelector('.sure').href=_this.dataset.tel
+			oMask.create().append(contactBuyer);
+		})
+		/*提醒买家收货*/
+		mui('.mui-scroll').on('tap','.car-item .notify-receive',function(){
+			var _this=this,contianer=this.parentNode.parentNode;
+			var notifyList=web.cookie.get('notifyList');
+			if(notifyList){
+				notifyList=notifyList.split('|');
+				for(var i=0;i<notifyList.length;i++){
+					if(notifyList[i]==contianer.dataset.orderid){
+						if(web.cookie.get('orderId'+notifyList[i])){
+							pzToast('不能频繁提醒！');
+							return;
+						}
+					}
+				}
+			}else{
+				notifyList=[];
+			}
+			oMask.callback=function(){
+				post({
+					url: autoorderNotify,
+					data: {
+						"orderId": contianer.dataset.orderid,
+						"sellerId": web.getItem('userId'),
+					},
+					success : function(data){
+						pzToast('已经提醒买家收货了！',true);
+						notifyList.push(contianer.dataset.orderid);
+						web.cookie.set('notifyList',notifyList.join('|'));
+						web.cookie.set('orderId'+contianer.dataset.orderid,1,20);
+						//forEvalJS.listRefresh(now);
+					}
+				})
+			}
+			oMask.create().append(notifyReceive);
+		})
+		
+		var forEvalJS={
+			/*当前silde刷新*/
+			listRefresh:function(selector){
+				var container=mui('#scroll'+selector+' .mui-table-view');
+				container.off();
+				container[0].innerHTML='';
+				pageIndexList[now]=1
+				firstRequst[now]=1
+				upToLoad();
+			}
+		}
+	</script>
+
+</html>

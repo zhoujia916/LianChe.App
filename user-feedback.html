@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" href="css/common.css" />
+		<style>
+body,html {background-color: #fff!important;}
+.content {width: 95%;margin: 54px auto;}
+textarea {height: 125px;line-height: 21px;width: 100%;box-sizing: border-box;margin: 5px 0;padding: 10px 15px;-webkit-user-select: text;border: 1px solid rgba(0, 0, 0, .2);border-radius: 3px;outline: 0;background-color: #fff;-webkit-appearance: none;}
+.btn1 {margin-top: 43px;}
+.btn2 {margin-top: 20px;}
+.pz-pic-box{position:relative;float:left;margin-top:5px;margin-left:5px;background-image:url(img/pic_bg_03.jpg)}
+.pz-icon-l span{display:inline-block;height:20px;width:20px;margin-left:15px;margin-top:12px;background-size:cover;background-image:url(img/back_icon.png)}
+		</style>
+	</head>
+
+	<body>
+		<header class="pz-header">
+			<div class='pz-icon-l mui-action-back'><span></span></div>
+			<div id='title' class="pz-title">功能反馈</div>
+		</header> 
+		<div class='content'>
+			<div>
+				<h3>反馈意见</h3>
+			</div>
+			<div>
+				<textarea id='content' name="" rows="" cols="" placeholder="输入文字"></textarea>
+			</div>
+			<div>
+				<h3>上传图片</h3>
+			</div>
+			<div class='clearfix'>
+				<div id='pic-content' style='float:none;margin-top:5px'>
+					<div class='pz-pic-box'></div>
+				</div>
+			</div>
+		</div>
+		<div class='btn1'>
+			<div class='pz-btn pz-btn-width submit'>提交反馈</div>
+		</div>
+		<div class='btn2'>
+			<a class='pz-btn pz-btn-width' href='tel:567503389'>电话联系</a>
+		</div>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/common.js" ></script>
+	<script type="text/javascript" charset="UTF-8">
+		mui.init();
+		
+		var picUrl='';
+		(function(){
+			web.qs('.pz-pic-box').addEventListener('tap',sendPic,false)
+			
+			function createNew(){//创建新的初始化
+				var len=web.qsa('#pic-content div').length;
+				if(web.qsa('#pic-content div')[len-1].hadLoad){
+					var oD=web.createDom("<div class='pz-pic-box'></div>")
+					web.qs('#pic-content').appendChild(oD);
+					oD.addEventListener('tap',sendPic,false);
+				}
+			}
+			
+			function sendPic(){
+				var _this=this;
+				upPicFromGallery.options={
+					server: upPic,//服务器地址：图片文件->服务器 
+					showBox: _this,//图片预览容器
+					fileKey: 'upfile',//api 图片键名
+					type: "feedback",//api 图片干啥用的
+					uploadSuccess: uploadSuccess //上传成功回调 
+				}
+				upPicFromGallery.appendByGallery();
+				this.hadLoad=true;
+			}
+			
+			function uploadSuccess(pic){
+				picUrl+=pic+'※';
+				createNew();
+			}
+		})();
+		
+		web.qs('.submit').addEventListener('tap',function(){ 
+			if(!web.qs('#content').value||web.qs('#content').value.replace(/ /g,'')==''){
+				return pzToast('请填写内容！');
+			}
+			var param={};
+			param.addUserId=web.getItem('userId');
+			param.content=web.qs('#content').value;
+			param.pic=picUrl.replace(/※$/g,''); 
+			
+			post({
+				url: autouserFeedback,
+				data: param,
+				success: function(data){
+					setTimeout(mui.back,50);
+					plus.nativeUI.toast("感谢您的反馈！",{duration:"long"});
+				}
+			})
+		},false);
+		
+	</script>
+
+</html>

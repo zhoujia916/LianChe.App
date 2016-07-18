@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<meta name="apple-mobile-web-web-capable" content="yes">
+		<meta name="apple-mobile-web-web-status-bar-style" content="black">
+		<style>
+*{margin:0;padding:0;-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-appearance:none;-webkit-user-select:none}
+html,body{background-color:#f3f3f3}
+.pz-header{position:fixed;width:100%;height:44px;top:0;z-index:100;background-color:#03a9f4}
+.pz-title{position:relative;overflow:hidden;margin-left:54px;margin-right:54px;font-size:13.5px;color:#fff;height:44px;text-align:center;line-height:44px}
+.pz-icon-l{display:inline-block;width:54px;height:44px;position:absolute;left:0;top:0}
+.pz-icon-l span{display:inline-block;height:20px;width:20px;margin-left:15px;margin-top:12px;background-size:cover;background-image:url(img/back_icon.png)}
+.word-icon{float:right;margin-right:15px;line-height:44px}
+h1{position:relative;display:inline-block;font-weight:400;height:100%;font-size:13.5px;color:#fff}
+.pz-title input[type=text]{box-sizing:border-box;width:100%;display:inline-block;margin-top:10px;height:24px;padding:0 30px;border:0;outline:0;border-radius:12px;background-color:#2ab7f7;font-size:12px;-webkit-user-select:text}
+.pz-title label{display:inline-block;position:absolute;width:16px;height:16px;background-image:url(img/search_03.png);background-size:cover;top:15px;left:7px}
+		</style>
+	</head>
+
+	<body>
+		<header class="pz-header" style="position: relative">
+			<div class='pz-icon-l mui-action-back'><span></span></div>
+			<div class='pz-icon-r'><h1 class='word-icon'>取消</h1></div>
+			<div class="pz-title"><label for="search"></label><input type="text" name="" id="search" value="" /></div>
+		</header>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+		mui.init();
+		var oldback=mui.back;
+		mui.back=function(){	
+			document.querySelector('#search').value='';
+			document.activeElement.blur(); 
+			oldback();
+		}
+		
+		function open_soft_keyboard(){ 
+			setTimeout(function(){
+			    if(mui.os.ios){
+			            var wv_current = plus.webview.currentWebview().nativeInstanceObject();
+			            wv_current.plusCallMethod({ "setKeyboardDisplayRequiresUserAction": false });
+			    }else{
+		            var wv_current = plus.android.currentWebview();
+		            plus.android.importClass(wv_current);
+		            wv_current.requestFocus();
+		
+		            var Context = plus.android.importClass("android.content.Context");
+		            var InputMethodManager = plus.android.importClass("android.view.inputmethod.InputMethodManager");
+		            var main = plus.android.runtimeMainActivity();
+		            var imm = main.getSystemService(Context.INPUT_METHOD_SERVICE);
+		            imm.toggleSoftInput(0,InputMethodManager.SHOW_FORCED);
+			    }
+		        document.querySelector('#search').focus();
+	        },300);
+		}
+	</script>
+
+</html>

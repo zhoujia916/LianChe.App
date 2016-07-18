@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" href="css/mui.indexedlist.css" />
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/common.css" />
+		<style>
+html,body{background-color:rgba(0,0,0,.3)!important;height:100%;width:100%;overflow: hidden;}
+img{display:block;height:100%;width:100%}
+.mui-indexed-list-group:before{height:0}
+.mui-indexed-list-group:after{background:#f5f5f5}
+.mui-indexed-list-bar{background:transparent!important}
+.mui-indexed-list-bar a{font-size:12.5px;color:#333}
+.mui-table-view{background:transparent}
+.pz-table-view-cell{padding:7px 10px;font-size:12.5px;color:#626262;background:#fff!important}
+.mui-indexed-list-group{font-size:12.5px;color:#333;font-weight:700;padding:1px 19px;background:#fff;margin-top:10px}
+.mui-indexed-list-group:first-child{margin-top:0}
+.pz-table-view-cell span{display:inline-block;width:40px;height:40px;vertical-align:middle;margin-right:10px}
+.pz-table-view-cell{border-bottom:1px solid #f5f5f5}
+.mui-table-view li:first-child{border-top:1px solid #f5f5f5}
+.pz-table-view-cell:after{width:0!important}
+.mui-table-view:before{height:0!important}
+.mui-table-view:after{height:0!important}
+.pz-table-view-cell.mui-active{width:100%!important}
+#brand{position:fixed;width:100%;top:0;opacity:1;z-index:50;transition:opacity .3s;-webkit-transition:opacity .3s}
+#sort{position:fixed;width:100%;top:0;opacity:0;z-index:1;transition:opacity .3s;-webkit-transition:opacity .3s}
+		</style>
+	</head>
+	<body>
+		<div id='brand' class="mui-indexed-list" >
+			<div class="mui-indexed-list-search mui-input-row mui-search" style='display: none; '>
+				<input type="search" class="mui-input-clear mui-indexed-list-search-input" placeholder="搜索机场">
+			</div>
+			<div class="mui-indexed-list-bar">
+				<a>A</a><a>B</a><a>C</a><a>D</a><a>E</a><a>F</a><a>G</a><a>H</a><a>I</a><a>J</a><a>K</a><a>L</a><a>M</a><a>N</a><a>O</a><a>P</a><a>Q</a><a>R</a><a>S</a><a>T</a><a>U</a><a>V</a><a>W</a><a>X</a><a>Y</a><a>Z</a>
+			</div>
+			<div class="mui-indexed-list-alert"></div>
+			<div class="mui-indexed-list-inner">
+				<div class="mui-indexed-list-empty-alert">没有数据</div>
+				<ul id='brand-list' class="mui-table-view">
+				</ul>
+			</div>
+		</div>
+		<ul id='sort' class='pz-ul' style='border-top: solid 1px #e3e3e3'>
+			<li data-type='1'>
+				<h2>时间排序</h2>
+			</li>
+			<li data-type='2'>
+				<h2>信用排序</h2>
+			</li>
+		</ul>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/common.js"></script>
+	<script type="text/javascript" src="js/mui.indexedlist.js"></script>
+	<script type="text/javascript" src="js/brand.js" ></script>
+	<script type="text/javascript" src="js/read-brand.js" ></script>
+	<script>
+		mui.init();
+		
+		/*从href中哪一页打开的*/
+		var openerHref;
+		
+		/*初始化品牌列表*/
+		var oIndexList=null;
+		mui.plusReady(function(){
+			if (oIndexList==null){
+				web.qs('#brand').style.height =  plus.screen.resolutionHeight-plus.navigator.getStatusbarHeight()-74 + 'px';
+				oIndexList = new mui.IndexedList(web.qs('#brand'));
+			}
+		});
+		
+		/*时间 信用排序*/
+		function sortFn() {
+			var childHref=openerHref=='car-selling.html'?'car-selling-list.html':'car-special-selling-list.html';//href页的子webview
+			app.VW(openerHref).evalJS('oSortBoard.clear()');
+			app.VW(childHref).evalJS('forEvalJS.showSortItems("'+this.innerText+'")')
+			app.VW(childHref).evalJS('forEvalJS.sortRequest('+this.dataset.type+')');
+		}
+		/*品牌排序*/
+		function brandFn() {
+			var childHref=openerHref=='car-selling.html'?'car-selling-list.html':'car-special-selling-list.html';//href页的子webview
+			app.VW(openerHref).evalJS('oSortBoard.clear()');
+			app.VW(childHref).evalJS('forEvalJS.showSortItems("'+this.innerText+'")')
+			app.VW(childHref).evalJS('forEvalJS.brandRequest('+this.dataset.brandid+')');
+		}
+		mui('#brand').on('tap', 'li.mui-indexed-list-item', brandFn);
+		
+		mui('#sort').on('tap', 'li', sortFn);
+		
+		
+		var oldback = mui.back;
+		mui.back = function() {
+			app.VW(openerHref).evalJS('oSortBoard.clear()');
+			oldback();
+		}
+		
+	</script>
+	<script type="text/javascript" src="js/sort-sub.js" ></script>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" href="css/common.css" />
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<style>
+/*html,body{background-color:#FFFFFF!important}*/
+.pz-content{width:92.5%;margin-left:auto; margin-right:auto;overflow: hidden;}
+.pz-content>div>div{margin-top:13px}
+.pz-content .b{font-size:14px}
+.pz-content h4{font-size:12.5px}
+p{font-size:13.5px;color:#626262;line-height:1.5em;text-align:justify;text-justify:distribute-all-lines;text-align-last:justify;margin-bottom:1em;width:100%}
+.img{font-size:13.5px;margin-bottom:1em}
+.mui-loading{margin-top:150px;background-color:#F3F3F3}
+		</style>
+	</head>
+	<body>
+		<header class="pz-header">
+			<div class='pz-icon-l mui-action-back'><span></span></div>
+			<div id='title' class="pz-title">新闻</div>
+		</header> 
+		<div class="pz-content">
+			<div class="mui-loading">
+				<div class="mui-spinner">
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/common.js" ></script>
+	<script type="text/javascript" charset="UTF-8">
+		mui.init();
+		
+		mui.plusReady(function(){
+			app.hiddenIndicator();
+		})
+		
+		window.addEventListener('newsId',function(event){
+			web.qs('.pz-title').innerText= event.detail.title;
+			web.qs('.pz-content').innerHTML='暂时没有内容';
+			/*setTimeout(function(){
+				post({
+				  	url: showMessage,
+				  	data: {
+				  		'msgId': event.detail.msgId,
+				  		'toUserId': web.getItem('userId')
+				  	},
+				  	success: function(data){
+				  		var j=data.data;
+				  		web.qs('.pz-content').innerHTML=''
+				  		var html='<div><div><h2 class="b">'+j.msgTitle+'</div><div><h4>'+j.formUserName+' '+j.addTime+' 浏览 '+j.viewCount+'</h4></div><div>'+j.msgContent+'</div></div>';
+					  	web.qs('.pz-content').innerHTML= html;
+				  	}
+				})
+			});*/
+		},300);
+	</script>
+</html>

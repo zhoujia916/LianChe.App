@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" href="css/common.css" />
+		<style>
+html,body{background:#FFFFFF!important}
+.content{margin-top:60px}
+.per-photo{position:relative;width:68px;height:68px;margin:0 auto;background-image:url(img/member_photo.png);background-size: 100% 100%; background-position: center center;margin-bottom:25px;border-radius:50%;}
+.pz-ul li{height:51px;padding:15px 10px}
+.pz-ul li.nav:after{top:19px}
+.pre-dot span{width:12px;height:12px;display:inline-block;vertical-align:middle;border-radius:50%;margin:0 20px 0 10px}
+.s1{background:#7ecef4}
+.s2{background:#ed5564}
+.s3{background:#ffd200}
+.pz-icon-l span{display:inline-block;height:20px;width:20px;margin-left:15px;margin-top:12px;background-size:cover;background-image:url(img/back_icon.png)}
+.per-photo input {width: 100%; height: 100%;opacity: 0;}
+		</style>
+	</head>
+
+	<body>
+		<header class="pz-header">
+			<div class='pz-icon-l mui-action-back'><span></span></div>
+			<div id='title' class="pz-title">个人信息</div>
+		</header>
+		<div class='content'>
+			<div>
+				<div class="per-photo"></div>
+			</div>
+			<div>
+				<ul class="pz-ul">
+					<li class="nav pre-dot a" data-href='user-improve-info.html' data-title='完善个人信息' data-type='open'>
+						<div><span class='s1'></span><h3>完善个人信息</h3></div>
+					</li>
+					<li class="nav pre-dot a" data-href='user-auth.html' id='to-auth' data-title='实名认证' data-type='open'>
+						<div><span class='s2'></span><h3>实名认证</h3></div><h3 id='auth-status'>（未认证）</h3>
+					</li>
+					<li class="nav pre-dot a" data-href='user-modify-password.html' data-title='修改密码' data-type='open'>
+						<div><span class='s3'></span><h3>修改密码</h3></div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/common.js" ></script>
+	<script type="text/javascript" src="js/template.js"></script> 
+	<script type="text/javascript" charset="UTF-8">
+		mui.init();
+		
+		mui.plusReady(plusReady)
+		
+		function plusReady(){
+			var userHead=web.getItem('userHead');
+			if(userHead){
+				web.qs('.per-photo').style.backgroundImage='url('+userHead+'),url(img/member_photo.png)'
+			}
+			if(web.getItem('isAuth')){//已认证禁止再认证
+				web.qs('#auth-status').innerText='（已认证）';
+				web.qs('#to-auth').className='pre-dot';
+				web.qs('#to-auth').removeEventListener('tap',hrefHander,false);
+			}
+		
+		}
+		
+		(function(){
+			web.qs('.per-photo').addEventListener('tap',function(){//初始现有的input
+				upPicFromGallery.options={
+					server: upPic,//服务器地址：图片文件->服务器 
+					showBox: web.qs('.per-photo'),//图片预览容器
+					fileKey: 'upfile',//api 图片键名
+					type: "avatar",//api 图片干啥用的
+					ratio: 1, //比例压缩 可选
+					width:'200px', //宽高压缩 可选
+					height:'200px' ,//比例压缩->宽高压缩
+					uploadSuccess: uploadSuccess //图片url->服务器 成功回调 
+				}
+				upPicFromGallery.appendByGallery();
+			},false);
+				
+			function uploadSuccess(pic){
+				post({//再向服务器传送图片url
+					url: updateUserAvatar,
+					data:{'userId': web.getItem('userId'),'userAvatar': pic },
+					success: function(){
+						pzToast('修改头像成功！',true);
+						web.setItem({'userHead' : pic});
+						app.VW('user-center.html').evalJS('forEvalJS.updateUserPro()');
+					}
+				})
+			}
+		})();
+			
+	</script> 
+
+</html>

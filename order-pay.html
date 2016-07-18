@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" href="css/common.css" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<style>
+.pz-icon-l span{background-image:url("img/back_icon.png");background-size:cover}
+.mui-radio input[type=radio]:checked:before{color:#ed5564}
+.mui-radio input[type=radio]{position:absolute;left:6px !important;float:left;top:0;padding:0;height:18px;width:18px}
+.mui-input-row{line-height:20px;overflow:visible}
+.mui-input-row label{position:relative;padding:0 0 0 74px !important;line-height:20px}
+.mui-input-row label:before{display:inline-block;position:absolute;content:' ';top:2px;left:40px;height:20px;width:20px;background-size:cover}
+.alipay:before{background-image:url("img/zfb.jpg")}
+.wxpay:before{background-image:url("img/wx.jpg")}
+.mui-input-row label h2{margin-right:8px}
+.pz-ul>li.height{height:51px;padding:15px 10px}
+.pz-btn{margin-top:30px}
+.pay-box,.pay-failed,.pay-succeed{position: absolute;top: 0;left:0;width:100%}
+.pay-failed .clearfix>div:first-child,.pay-succeed .clearfix>div:first-child{width: 44%; float: left; box-sizing: border-box}
+.pay-failed .clearfix>div:last-child,.pay-succeed .clearfix>div:last-child{width: 44%; float: right; box-sizing: border-box}
+
+.pay-result-box{padding:20px 13px 38px;background: #FFFFFF;}
+.pay-result{padding-top:50px;}
+.pay-result div{width:20.8%;}
+.pay-result img{display: block; max-width: 100%;}
+.pay-result~p{text-align: center;color:#000000;margin-top:20px;margin-bottom:20px;}
+		</style>
+	</head>
+
+	<body>
+		<header class="pz-header">
+			<div class='pz-icon-l mui-action-back'><span></span></div>
+			<div id='title' class="pz-title">支付订单</div>
+		</header> 
+		<div class='pz-content'>
+			<div class="pay-box">
+				<ul class="pz-ul">
+					<li style='height:46px;padding-bottom:10px;'> 
+						<h2 class='b'>支付详情</h2>
+					</li>
+					<li> 
+						<h2>订金</h2><h4 id='deposit'></h4>
+					</li>
+					<span class="pz-fence"></span>
+					<li style='height:46px;padding-bottom:10px;'> 
+						<h2 class='b'>选择支付方式</h2>
+					</li>
+					<li class='height'>
+						<div class="mui-input-row mui-radio mui-left">
+							<label for='alipay' class='alipay'><h2>支付宝</h2><h4>支持大额订单支付</h4></label>
+							<input name="radio1" type="radio" id='alipay' checked="true" value='alipay'>
+						</div>
+					</li>
+					<li class='height' style='display: none'> 
+						<div class="mui-input-row mui-radio mui-left" >
+							<label for='wxpay' class='wxpay'><h2>微信支付</h2><h4>单笔订单金额最高支持8000元</h4></label>
+							<input name="radio1" type="radio" id='wxpay' value='wxpay'>
+						</div>
+					</li>
+				</ul>
+				<div class='pz-btn pz-btn-width'>确认支付 </div>
+			</div>
+			<div class="pay-failed pay-result-box" style='display:none'>
+				<div class='pay-result flex flex-pack-center'>
+					<div><img src='img/pay_failed.jpg' /></div>
+				</div>
+				<p>咦？支付失败了</p>
+				<div class='clearfix'>
+					<div class='pz-btn to-order' data-href='user-buy.html' data-type='open'>查看订单 </div>
+					<div class='pz-btn' id='try-again'>再试一次 </div>
+				</div>
+			</div>
+			<div class="pay-succeed pay-result-box" style='display:none'>
+				<div class='pay-result flex flex-pack-center'>
+					<div><img src='img/pay_succeed.jpg' /></div>
+				</div>
+				<p>恭喜订购成功！</p>
+				<div class='clearfix'>
+					<div class='pz-btn to-order'  data-href='user-buy.html' data-type='open'>查看订单 </div>
+					<div class='pz-btn' id='back-index'>返回首页 </div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/common.js" ></script>
+	<script type="text/javascript" src="js/template.js" ></script>
+	<script>
+		mui.init();
+		
+		var pays={},orderInfo={};
+		window.addEventListener('payOrder',function(e){
+			orderInfo.orderId=e.detail.orderId;
+			orderInfo.buyerId=e.detail.buyerId;
+			orderInfo.sellerId=e.detail.sellerId;
+			orderInfo.slideIndex=e.detail.slideIndex;
+			web.qs('#deposit').innerText='￥'+e.detail.deposit;
+		},false);
+		
+		function plusReady(){
+		    plus.payment.getChannels(function(channels){
+		        for(var i in channels){
+					var channel=channels[i];
+					if(channel.id=='qhpay'||channel.id=='qihoo'){
+						continue;
+					}
+					pays[channel.id]=channel;
+				}
+		    },function(e){
+		       plus.nativeUI.alert("获取支付通道失败！");
+		    });
+		}
+		
+		mui.plusReady(plusReady);
+		
+		var payList={
+			alipay:alipaySver,
+			wxpay:wxpaySver
+		};
+		var payMethod={
+			alipay:2,
+			wxpay:1
+		}
+		var isPaying=false;
+		web.qs('.pz-btn').addEventListener('tap',function(){
+			if(isPaying) return;
+			isPaying=true;
+			if(pays=={}){
+				pzToast('不支持支付！'); return;
+			}else{
+			    var PAYSERVER='',way='';
+				mui('.mui-input-row input').each(function(){
+					if(this.checked){
+						PAYSERVER=payList[this.value];
+						way=this.value
+						orderInfo.payMethod=payMethod[this.value]
+					}
+				});
+				var param={};
+				for(keys in orderInfo){
+					if(orderInfo[keys])
+						param[keys]=orderInfo[keys]
+				}
+				post({
+					url: PAYSERVER,
+					data: param,
+					success: function(data){
+						plus.payment.request(pays[way],data.data,function(result){
+		                    plus.nativeUI.alert("支付成功！",function(){
+		                    	/*卖家支付订金*/
+		                    	if(orderInfo.sellerId){
+		                    		param.sellerPayMethod=param.payMethod;
+		                    		post({
+		                    			url:  autoorderAccept,
+		                    			data: param,
+										success: function(data){
+											web.qs('.pay-box').style.display='none';
+											web.qs('.pay-succeed').style.display='block';
+											/*关闭提交订单页面*/
+											app.VW('order-submit.html')&&app.VW('order-submit.html').hide('none');
+											/*从我的销车支付，成功后刷新列表*/
+											if(orderInfo.slideIndex==0||orderInfo.slideIndex){
+												app.VW('user-sell.html').evalJS('forEvalJS.listRefresh('+orderInfo.slideIndex+')');
+											}
+										},
+										waiting: true
+		                    		})
+		                    	/*买家支付订金*/	
+		                    	}else{
+		                    		param.buyerPayMethod=param.payMethod;
+									post({
+										url: autoorderDeposit,
+										data: param,
+										success: function(data){
+											web.qs('.pay-box').style.display='none';
+											web.qs('.pay-succeed').style.display='block';
+											/*关闭提交订单页面*/
+											app.VW('order-submit.html')&&app.VW('order-submit.html').hide('none');
+											/*从我的购车支付，成功后刷新列表*/
+											if(orderInfo.slideIndex==0||orderInfo.slideIndex){
+												app.VW('user-buy.html').evalJS('forEvalJS.listRefresh('+orderInfo.slideIndex+')');
+											}
+										},
+										waiting: true
+									});
+		                    	}
+		                    });
+		                },function(error){
+		                	isPaying=false;//支付失败解除支付按钮锁定
+		                	web.qs('.pay-box').style.display='none';
+							web.qs('.pay-failed').style.display='block';
+							/*关闭提交订单页面*/
+							app.VW('order-submit.html')&&app.VW('order-submit.html').hide('none');
+		                });
+					},
+					waiting: true,
+					error: function(){
+						isPaying=false;
+					}
+				});
+			}
+		},false);
+		
+		/*返回首页*/
+		web.qs('#back-index').addEventListener('tap', function() {
+			app.VW('user-collect.html')&&app.VW('user-collect.html').close('none')
+			app.VW('order-submit.html')&&app.VW('order-submit.html').close('none')
+			app.VW('user-buy.html')&&app.VW('user-buy.html').close('none')
+			app.VW('user-sell.html')&&app.VW('user-sell.html').close('none')
+			app.VW('car-details.html').hide('none')
+			app.VW('car-special-selling.html').hide('none')
+			app.VW(plus.runtime.appid).evalJS('changeTab("0")');
+			mui.back();  
+		}, false);
+		
+		/*查看订单*/
+		mui('.pz-content').on('tap','.to-order',function(){
+			if(app.VW('order-submit.html')){
+				app.openVW('user-buy.html')
+				setTimeout(function(){
+					app.VW('order-submit.html').close('none')
+					app.VW('car-details.html').hide('none')
+					app.VW('car-special-selling.html').hide('none')
+					app.VW(plus.runtime.appid).evalJS('changeTab("2")');
+					app.self().close('none');
+				},350)
+			}else{
+				mui.back()
+			}
+		},false)
+		
+		web.qs('#try-again').addEventListener('tap', function() {
+			web.qs('.pay-box').style.display='block';
+			web.qs('.pay-failed').style.display='none';
+		}, false);
+		
+	</script>
+</html>

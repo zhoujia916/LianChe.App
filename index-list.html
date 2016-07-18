@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" href="css/common.css" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<style>
+html,body {width: 100%;background: #fff!important; }
+.mui-content{background: #fff!important;}
+header {background-image: url(img/main-h-bg.png);background-repeat-x: repeat;background-size: auto 100%;background-color: transparent!important;}
+.pz-header {position: fixed;width: 100%;height: 44px;top: 0;z-index: 100;}
+.mui-indicator {background: #fff!important;box-shadow: none!important;-webkit-box-shadow: none!important;}
+.mui-slider-indicator .mui-active {background: RGB(163, 163, 163)!important;}
+.news {position: relative; width: 100%; padding:10px 5px 10px 30px;box-sizing: border-box;border-bottom: 1px solid RGB(225, 225, 225);overflow:hidden;}
+.news .earth:before {display:inline-block;position:absolute;margin-left:-24px;content:'';vertical-align:middle;height: 20px;width: 20px;background-image: url(img/news-icon.png);background-size: cover;}
+.news h3 {white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
+.news-loop{-webkit-transition:opacity 1s linear;}
+.nav-box {position: relative;width: 93%;margin: 12px auto 0;}
+.nav-box>div:first-child {width: 49%;float: left;}
+.nav-box>div:last-child {width: 49%;float: right;}
+.nav-box .pz-left {width: 100%;margin-bottom: 9px;}
+.nav-box .pz-right {width: 100%;margin-bottom: 7px;}
+.nav-box img {margin: 0 auto;display: block;max-width: 100%;}
+.d1 {background: RGB(235, 97, 0);}
+.d2 {background: RGB(244, 171, 40);}
+.d3 {background: RGB(89, 189, 91);}
+.d4 {background: RGB(88, 208, 206);}
+.d5 {background: RGB(0, 183, 240);}
+.small span {height: 12px;width: 12px;}
+.mui-slider,.mui-slider-group,.mui-slider-item,.slider-box{height:0;padding-bottom:60%;background-size:100% 100%;background-color:#f3f3f3!important}
+.mui-slider-item{background-size:100% 100%;}
+		</style>
+	</head>
+	<body>
+		<div class="mui-content">
+			<div class="slider-box">
+			</div>
+			<div class="news a flex" data-href='news.html' data-type='open' data-title='新闻'>
+				<h2 class='b earth'>最新消息&nbsp;|&nbsp;</h2>
+				<h3 class="flex-1 news-loop">最低价转让在不动手就迟了最低价转让在不动手就迟了</h3>
+			</div>
+			<div class='nav-box clearfix'>
+				<div>
+					<div data-href='car-special-selling.html' data-type='common' class='pz-left d1 a'><img src="img/1_03.png" alt="" /></div>
+					<div data-href='user-release-car.html' data-type='open' data-able='isAuth'  data-title='发布车源' class='pz-left d2 a'><img src="img/1_11.jpg" alt="" /></div>
+				</div>
+				<div>
+					<div href='' class='pz-right d3' id='sec-nav'><img src="img/1_05.jpg" alt="" /></div>
+					<div href='' class='pz-right d4 please-wait'><img src="img/1_08.jpg" alt="" /></div>
+					<div href='' class='pz-right d5 please-wait'><img src="img/1_14.jpg" alt="" /></div>
+				</div>
+			</div>
+		</div>
+
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/common.js"></script>
+	<script type="text/javascript" src="js/template.js"></script>
+	<script>
+		mui.init({
+			keyEventBind: {
+				backbutton: false,
+				menubutton: false
+			}
+		});
+		
+		mui.plusReady(function() {
+			app.hiddenIndicator()
+			setTimeout(function() {
+				getTemplate('default', 'template.html');
+			}, 300);
+			textADS()
+			loopADS()
+		});
+		/*最新消息 新闻*/
+		function textADS(){
+			var list=[{
+					title:'最低价转让在不动手就迟了最低价转让在不动手就迟了',
+					link:''
+				},{
+					title:'看电视放假啊上来的房间卡上的风景撒的发生都发生地方',
+					link:''
+				},
+				{
+					title:'发生地方久爱时空发动机啊士大夫空间我去啃饭撒打开房间啊可是老大',
+					link:''
+				}];
+			var len=list.length,count=0;
+			post({
+				url:autoarticleList,
+				data: {catId:4},
+				success: function(){
+					setAttr();
+					web.qs('.news-loop').timer=setInterval(function(){
+						web.qs('.news-loop').style.opacity=0.3;
+						setTimeout(function(){
+							count++;
+							count==len?count=0:'';
+							web.qs('.news-loop').style.opacity=1;
+							setAttr();
+						},1000)
+					},5000);
+				}
+			});
+			function setAttr(){
+				web.qs('.news-loop').innerText=list[count].title;
+				web.qs('.news').dataset.link=list[count].link;
+			}
+		}
+		/*轮播图新闻*/
+		function loopADS(){
+			var list=[{
+					title:'最低价转让在不动手就迟了最低价转让在不动手就迟了',
+					link:'',
+					pic:'img/bg2.jpg'
+				},{
+					title:'看电视放假啊上来的房间卡上的风景撒的发生都发生地方',
+					link:'',
+					pic:'img/bg2.jpg'
+				},
+				{
+					title:'发生地方久爱时空发动机啊士大夫空间我去啃饭撒打开房间啊可是老大',
+					link:'',
+					pic:'img/bg2.jpg'
+				}];
+			post({
+				url:autoarticleList,
+				data: {catId:2},
+				success: function(data){
+					createSlider(list);
+				}
+			});
+			function createSlider(list){
+				var len=list.length;
+				var html1='<div class="mui-slider-group mui-slider-loop">'+
+							'<div class="mui-slider-item" data-link="'+list[len-1].link+'" style="background-image:url('+list[len-1].pic+')"></div>',
+					html2='<div class="mui-slider-indicator">';
+				if(len==1){
+					html1='<div class="mui-slider-group">'+
+						'<div class="mui-slider-item" data-link="'+list[0].link+'" style="background-image:url('+list[0].pic+')"></div>'+
+					'</div>';
+					html2+='<div class="mui-indicator mui-active"></div></div>'
+				}else{
+					for(var i=0; i<len; i++){
+						html1+='<div class="mui-slider-item" data-link="'+list[i].link+'" style="background-image:url('+list[i].pic+')"></div>';
+						if(i==0){
+							html2+='<div class="mui-indicator mui-active"></div>'
+						}else{
+							html2+='<div class="mui-indicator"></div>'
+						}
+					}
+					html1+='<div class="mui-slider-item" data-link="'+list[0].link+'" style="background-image:url('+list[0].pic+')"></div>'
+					html1+='</div>';html2+='</div>';
+				}
+				web.qs('.slider-box').innerHTML='<div class="mui-slider">'+html1+html2+'</div>';
+				mui('.mui-slider').slider({
+					interval: 8000
+				});
+				html1=null;html2=null
+			}
+		}
+		
+		
+		web.qs('#sec-nav').addEventListener('tap', function() {
+			app.VW(plus.runtime.appid).evalJS('changeTab(1)'); 
+		}, false);
+		
+		mui('body').on('tap','.please-wait',function(){
+			pzToast('敬请期待')
+		});
+		
+	</script>
+	<script>
+	</script>
+</html>

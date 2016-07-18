@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" href="css/common.css" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<style>
+.mui-navigate-right:after,.mui-push-right:after{right:10px}
+.transport{position:relative;width:120px}
+.mui-checkbox input[type=checkbox]:checked:before,.mui-radio input[type=radio]:checked:before{color:#7ecef4}
+.mui-checkbox input[type=checkbox]{position:absolute;top:10px;left:0!important;background:transparent!important}
+.ul3 li{margin-top:10px;padding-top:0;padding-bottom:0}
+.ul3 li>div{float:left!important}
+.pz-btn{margin-top:15px;margin-bottom:30px}
+.pz-content{display:none;position:relative;}
+		</style>
+	</head>
+
+	<body>
+		<header class="pz-header">
+			<div class='pz-icon-l mui-action-back'><span></span></div>
+			<div id='title' class="pz-title">确认订单</div>
+		</header> 
+		<div class="pz-content">
+	    	<ul class="pz-ul">
+				<li class='pz-deep-border' style='padding-top:15px;height:46px'>
+					<h2 class='b'>车辆信息</h2>
+				</li>
+				<li class='pz-multi-line pz-ul-arrow-hidden'>
+					<h3 class='modifiy' id='brandName'>&nbsp;</h3><!--福特 翼虎-->
+					<h4 class='modifiy' id='catName'></h4><!--2015款 2.0L GTDi <br />四驱精英型-->
+				</li>
+				<li>
+					<h3>外观</h3>
+					<h4 class='modifiy' id='outsideColor'></h4>
+				</li>
+				<li>
+					<h3>内饰</h3>
+					<h4 class='modifiy' id='insideColor'></h4>
+				</li>
+				<li>
+					<h2 class='b'>指导价：</h2>
+					<h4 class='modifiy' id='officalPrice' data-before='￥' data-after='万' data-unit='10000'></h4>
+				</li>
+				<li>
+					<h3>数量（台）</h3>
+					<h4 class='modifiy' id='totalNumber' data-before='x' data-unit='1'></h4>
+				</li>
+				<li>
+					<h3>加配描述：</h3>
+					<h4 class='modifiy' id='parts'></h4>
+				</li>
+				<li>
+					<h3>加配金额：</h3>
+					<h4 class='modifiy' id='partsPrice'></h4>
+				</li>
+				<li>
+					<h3>合计：</h3>
+					<h5 class='b'id='finalPrice'></h5>
+				</li>
+				<span class='pz-fence'></span>
+				<li class='pz-deep-border'>
+					<h2 class='b'>订购信息</h2>
+				</li>
+				<li>
+					<h3>支付定金</h3>
+					<h5 id='deposit'></h5>
+				</li>
+				<li>
+					<h3>提车方式</h3>
+					<h4>自提</h4>
+				</li>
+				<li class='nav get-time'>
+					<h3>提车时间</h3>
+					<h4 id='timeString'>请选择</h4>
+				</li>
+				<li class='nav pz-multi-line write-value'>
+					<h3>备注</h3>
+					<h4 id='remark'>填写备注</h4>
+				</li>
+				<span class='pz-fence'></span>
+				<li style='display: none'> 
+					<label for='input-agree' id='pz-label' style='position:absolute;width: 100%'><h3>同意XX二手车协议</h3></label>
+					<div class="mui-checkbox">
+						<input name="checkbox" type="checkbox" id='input-agree'>
+					</div>
+				</li>
+			</ul>
+			<div class='pz-btn pz-btn-width'>提交订单</div>
+		</div>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/common.js" ></script>
+	<script type="text/javascript" src="js/template.js"></script>
+	<script type="text/javascript" src="js/to-fill-value.js" ></script>
+	<script>
+		mui.init();
+		
+		/*webview隐藏时清除内容，解决iphone的loaded中的fire只能执行一次 */
+		mui.plusReady(function(){
+			app.hiddenIndicator();
+			/*app.self().addEventListener('hide',function(){
+				app.self().clear();
+			})*/
+		})
+		
+		
+		var order={},//订单详情
+			isOrderReady=false;//服务器返回订金后 为true
+		
+		/*动态修改页面内容*/
+		function modifiy(data){
+			mui('.modifiy').each(function(){
+				var flag=true;
+				if(data[this.id]==undefined){
+					data[this.id]='无';
+				}
+				if(this.dataset.unit){
+					this.innerText=parseFloat(data[this.id])/parseFloat(this.dataset.unit);
+					flag=false;
+				}
+				if(this.dataset.before){
+					this.innerText=this.dataset.before+this.innerText
+					flag=false;
+				}
+				if(this.dataset.after){
+					this.innerText=this.innerText+this.dataset.after
+					flag=false;
+				}
+				if(flag){
+					this.innerText=data[this.id]
+				}
+			});
+			if(data.hasParts==2){//加配
+				web.qs('#finalPrice').innerText=(parseFloat(data.totalPrice)+(parseFloat(data.partsPrice)))/10000+'万元';
+			}else{
+				web.qs('#finalPrice').innerText=parseFloat(data.totalPrice)/10000+'万元';
+			}
+		}
+		
+		/*监听订单详情页面的fire 并且向服务器请求订金数量*/
+		window.addEventListener('getOrder',function(e){
+			modifiy(e.detail);
+			order['car.carAttrId']=e.detail.carAttrId
+			order['car.carNumber']=e.detail.totalNumber
+			order['car.hasParts']=e.detail.hasParts
+			order['car.carId']=e.detail.carId
+			order['car.carPrice']=parseFloat(e.detail.totalPrice)/parseFloat(e.detail.totalNumber)+((e.detail.hasParts==1)?0:parseFloat(e.detail.partsPrice))
+			order.buyerId=e.detail.userId;
+			post({
+				url: autoorderCalc,
+				data: order,
+				success: function(data){
+					web.qs('#deposit').innerText='￥'+data.data;
+					order.deposit=data.data;
+					isOrderReady=true;
+					setTimeout(function(){
+						web.setStyle(web.qs('.pz-content'),{display: 'block'});
+					},400);
+				},
+				waiting: true
+			});
+		},false);
+		
+		/*确认订单*/
+		document.querySelector('.pz-btn').addEventListener('tap', function() {
+			
+			if(!order['car.carAttrId']) return;//没有得到fire的传值 
+			var userId=web.getItem('userId');
+			if(!userId) return;//用户没有登录 返回
+			if(!isOrderReady){//没有得到订金返回
+				pzToast('正在获取定金！'); return;
+			}
+			if(web.qs('#timeString').innerText=='请选择'){
+				return pickTime.call(web.qs('.get-time'));
+			}
+			/*if(!web.qs('#input-agree').checked){
+				return pzToast('请同意协议！')
+			}*/
+			if(web.qs('#remark').innerText=='填写备注'){
+				order.remark='';
+			}else{
+				order.remark=web.qs('#remark').innerText;
+			}
+			order.putTimeString=web.qs('#timeString').innerText;
+			order.buyerId=userId;
+			post({
+				url: orderSver,
+				data: order,
+				success:function(data){
+					mui.openWindow({
+						url: 'order-pay.html',
+						id: 'order-pay.html',
+						show:{
+							autoShow:true,
+							aniShow: aniShow,
+							duration:300
+						},
+						waiting:{
+							autoShow: false
+						}
+					});
+					app.VW('order-pay.html').addEventListener('loaded',function(){
+						mui.fire(app.VW('order-pay.html'), 'payOrder', {
+							orderId: data.data,
+							buyerId: web.getItem('userId'),
+							deposit: order.deposit
+						})
+					});
+				}
+			});
+		}, false);
+		
+		/*原生事件控件*/
+		mui('.pz-ul').on('tap', '.get-time', pickTime , false);
+		function pickTime() {
+			var _this=this;
+			plus.nativeUI.pickDate(function(e) {
+				var d = e.date;
+				_this.children[1].innerHTML=d.getFullYear() + "-" + web.addZero(d.getMonth() + 1) + "-" + web.addZero(d.getDate());
+			}, function(e) {});
+		}
+	</script>
+
+</html>

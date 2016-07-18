@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" href="css/common.css" />
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<style>
+.mui-content .mui-fullscreen{top:44px;height:auto}
+.mui-pull-top-tips{position:absolute;top:-20px;left:50%;margin-left:-25px;width:40px;height:40px;border-radius:100%;z-index:1}
+.mui-pull-top-tips{top:24px}
+.mui-pull-top-wrapper{width:42px;height:42px;display:block;text-align:center;background-color:#efeff4;border:1px solid #ddd;border-radius:25px;background-clip:padding-box;box-shadow:0 4px 10px #bbb;overflow:hidden}
+.mui-pull-top-tips.mui-transitioning{-webkit-transition-duration:200ms;transition-duration:200ms}
+.mui-pull-top-tips .mui-pull-loading{display:inline-block;width:100%;text-align:center;margin:0}
+.mui-pull-top-wrapper .mui-icon,.mui-pull-top-wrapper .mui-spinner{margin-top:7px}
+.mui-pull-top-wrapper .mui-icon.mui-reverse{}
+.mui-pull-bottom-tips{display:none;text-align:center;font-size:15px;line-height:40px;color:#777}
+.mui-pull-top-canvas{overflow:hidden;background-color:#fafafa;border-radius:40px;box-shadow:0 4px 10px #bbb;width:40px;height:40px;margin:0 auto}
+.mui-pull-top-canvas canvas{width:40px}
+.mui-slider-indicator.mui-segmented-control{background-color:#efeff4}
+.mui-scroll .mui-loading{margin-top:150px;background-color:#f3f3f3}
+.mui-table-view:before,.mui-table-view:after {height: 0;}
+		</style>
+	</head>
+	<body>
+		<header class="pz-header">
+			<div class='pz-icon-l mui-action-back'><span></span></div>
+			<div class='pz-icon-r'><span></span></div>
+			<div id='title' class="pz-title">我的收藏</div>
+		</header>
+		<div class="pz-content">
+			<div class="mui-scroll-wrapper mui-fullscreen">
+				<div class="mui-scroll">
+					<ul class="mui-table-view show-favs">
+						<div class="mui-loading">
+							<div class="mui-spinner">
+							</div>
+						</div>
+					</ul> 
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script src="js/mui.pullToRefresh.js"></script>
+	<!--<script src="js/mui.pullToRefresh.material.js"></script>-->
+	<script type="text/javascript" src="js/common.js"></script> 
+	<script type="text/javascript" src="js/append-html.js" ></script>
+	<script type="text/javascript" charset="UTF-8">
+		mui.init();
+		
+		web.qs('.pz-content').style.height=web.bodyHeight()-44+'px';
+		web.scroll('.mui-scroll-wrapper');
+		
+		mui.ready(function(){
+			mui('.mui-scroll').pullToRefresh({
+				/*down: {
+					callback: downToRefresh
+				},*/
+				up: {
+					callback: upToLoad
+				}
+			});
+			hideAllMuiTip();
+		});
+		
+		var oMask=new Mask();
+		var firstRequest=1;
+		var pageIndex=1;
+		
+		mui.plusReady(function(){
+			app.hiddenIndicator()
+			setTimeout(function(){
+				upToLoad();
+			},250);
+		})
+		
+		function removeCar(e){//删除收藏
+			e.stopPropagation();
+			var param={},_this=this;
+			var confirm=pzConfirm('您确定要删除这条收藏吗？',oMask,function(judge){
+				if(judge){
+					param.collectId = _this.dataset.collectid;
+					param.userId=web.getItem('userId');
+					post({
+						url: deleteCollect,
+						data: param,
+						success: function(data) {
+							web.qs('.show-favs').removeChild(_this.parentNode.parentNode.parentNode);
+							pzToast('删除收藏成功！',true);
+						}
+					});
+				}
+			});
+			oMask.create().append(confirm);
+		}
+		function upToLoad() {//加载
+			var param = {},childrenList=web.qs('.show-favs').children,collectId=0;
+			if(childrenList.length!=0){
+				collectId=childrenList[childrenList.length-1].dataset.collectid;
+			}
+			param.pageIndex=pageIndex
+			param.pageSize=10
+			param.markId = 2;
+			param.collectId = collectId;
+			param.userId=web.getItem('userId');
+			post({
+				url: listCollect,
+				data: param,
+				success: function(data) {  
+					if (data.data) {
+						if(firstRequest){
+							web.qs('.show-favs').innerHTML='';
+						}
+						appendHtml({
+							data: data.data,
+							parent: web.qs('.show-favs'),
+							type: 'myFavs',
+							upToLoad : true
+						},{
+							'.del': removeCar,
+							'.car-item': toCarsInfo
+						});
+						mui('.mui-scroll').pullToRefresh().endPullUpToRefresh(false);
+						web.qs('.mui-pull-bottom-tips').style.display='block';
+						firstRequest=0;
+						pageIndex++;
+					} else {
+						if(firstRequest){
+							web.qs('.show-favs').innerHTML='';
+						}
+						mui('.mui-scroll').pullToRefresh().endPullUpToRefresh(true);
+						if(firstRequest){
+							firstRequest=0;
+							firstInNoMsg()
+						}else{
+							showMuiTip();
+						}
+					}
+				}  
+			});
+		}
+		
+		function toCarsInfo(){
+			app.VW('car-details.html').show(aniShow, 250);
+			var param={};
+			if(web.getItem('userId')){
+				param.viewUserId=web.getItem('userId');
+			}
+			param.carId=this.dataset.carid;
+			app.VW('car-details.html').evalJS('forEvalJS.getCarDetails('+JSON.stringify(param)+')');		
+		}
+		/*function downToRefresh() {//刷新
+			var childrenList=web.qs('.show-favs').children,collectId=0;
+			if(childrenList.length!=0){
+				collectId=childrenList[0].dataset.collectid
+			}
+			post({
+				url: listCollect,
+				data:{
+					userId : web.getItem('userId'),
+					markId : '1',
+					collectId: collectId
+				},
+				success: function(data) {
+					if (data.data) {
+						appendHtml({
+							data: data.data,
+							parent: web.qs('.show-favs'),
+							type: 'myFavs',
+							upToLoad : false
+						},{   
+							del: removeCar
+						});
+						mui('.mui-scroll').pullToRefresh().endPullDownToRefresh();
+					} else {
+						mui('.mui-scroll').pullToRefresh().endPullDownToRefresh();
+					}
+				}
+			});
+		}*/
+		
+		
+		function firstInNoMsg(){
+			var tips=web.qs('.mui-pull-bottom-tips');
+			web.setStyle(tips,{display:'block',marginTop:'150px'});
+		}
+		
+		function hideAllMuiTip(){
+			var tips=web.qs('.mui-pull-bottom-tips');
+			web.setStyle(tips,{'display':'none'});
+		}
+		
+		function showMuiTip(){
+			var tips=web.qs('.mui-pull-bottom-tips');
+			web.setStyle(tips,{display:'block',marginTop:'0'});
+		}
+	</script>
+
+</html>

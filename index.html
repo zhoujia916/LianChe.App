@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<meta name="apple-mobile-web-web-capable" content="yes">
+		<meta name="apple-mobile-web-web-status-bar-style" content="black">
+		<meta name="format-detection" content="telephone=no,email=no" />
+		<link rel="stylesheet" href="css/common.css" />
+		<style>
+footer {width: 100%;height: 48px;box-sizing: border-box;border-top: 1px solid #dedede;position: absolute;bottom: 0;background: RGB(243, 243, 243)}
+footer>div {height: 100%;position: relative;}
+footer>div>img {margin: 0 auto;max-height: 100%;display: block;}
+html,body {width: 100%;height: 100%;}
+.d1 {width: 17.2%;float: left;margin-left: 3.75%;}
+.d2 {width: 17.2%;margin: 0 41.41%;position: absolute;}
+.d3 {width: 17.2%;float: right;margin-right: 3.75%;}
+		</style>
+	</head>
+	<body>
+		<footer class="clearfix" style="">
+			<div class="d1 d" data-url='main-list.html'><img src="img/nav-d-0-active.jpg" data-href='index-list.html'/></div>
+			<div class="d2 d" data-url='car-selling.html'><img src="img/nav-d-1.jpg"  data-href='car-selling-list.html'/></div>
+			<div class="d3 d" data-url='user-center.html'><img src="img/nav-d-2.jpg" data-href='user-center.html' /></div>
+		</footer>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script src='js/common.js'></script>
+	<script type="text/javascript" src="js/template.js" ></script>
+	<script>
+		mui.init({
+			statusBarBackground: '#000000'
+		});
+			
+		var wins = ['index-list.html', 'car-selling.html', 'user-center.html'],
+			pwin = null,aniShowList={};
+		function plusReady() {
+			//锁定竖屏
+			plus.screen.lockOrientation("portrait-primary");
+			pwin = plus.webview.currentWebview();
+			//预加载主界面
+			wins.forEach(function(item,i){
+				var sub_style={top: '0',bottom: '48px'},temp={},sub=null;
+				sub = plus.webview.create(item, item, sub_style);
+				if(i==0){
+					sub.show();
+					temp[wins[i]] = "true";
+					mui.extend(aniShowList,temp);
+				}else{
+					sub.hide();
+				}
+				pwin.append(sub);
+			});
+			//app是否已登录判断
+			setTimeout(function(){
+				init();
+			},500);
+		}	
+		
+		mui.plusReady(plusReady)
+		
+		/* app开始初始化 */
+		function init() {
+			//是否已经登录
+			var isLogin=web.getItem('userId');
+			//已登录，显示会员中心
+			if(isLogin){
+				app.VW('user-center.html').evalJS('forEvalJS.memberCenter()');
+			//显示登录	
+			}else{
+				app.VW('user-center.html').evalJS('forEvalJS.login()'); 
+			}
+			setTimeout(function() {
+				plus.navigator.closeSplashscreen(); 
+			}, 1500);
+		}
+		
+		/*底部选项卡*/
+		var aTab = web.qsa('.d');
+		var now = 0;
+		//底部导航按钮
+		for (var i = 0; i < aTab.length; i++) { 
+			aTab[i].idx = i+'';
+			aTab[i].addEventListener('tap', function() {
+				changeTab(0, this);
+			}, false);
+		};
+		function changeTab(i, o) {
+			var i = i || o.idx;
+			if (i == now) return;
+			//顶部状态栏变色
+			forIosChangeStausBar(i);
+			otherPageHander(wins[i]);
+			aTab[now].children[0].src = 'img/nav-d-' + now + '.jpg';
+			aTab[i].children[0].src = 'img/nav-d-' + i + '-active.jpg';
+			//显示目标选项卡
+			if(mui.os.ios||aniShowList[wins[i]]){
+				plus.webview.show(wins[i]);
+			}else{
+				var temp = {};
+				temp[wins[i]] = "true";
+				mui.extend(aniShowList,temp);
+				plus.webview.show(wins[i],"fade-in",300);
+			}
+			plus.webview.hide(wins[now]);
+			now = i;
+			return i;
+		}
+		
+		function forIosChangeStausBar(i){
+			if(mui.os.ios){
+				if(i=='0'){
+					
+				}else{
+					
+				}
+			}
+		}
+		
+		function otherPageHander(id){
+			//获取车源数等
+			if(id==='user-center.html'){
+				setTimeout(function(){
+					app.VW('user-center.html').evalJS('forEvalJS.getMemberInfo()');
+				},150);
+			}
+			//获取车源
+			if(id==='car-selling.html'){
+				setTimeout(function(){
+					app.VW('car-selling-list.html').evalJS('forEvalJS.firstGet()');
+				},150);
+			}
+		}
+		
+		var first = null;//两次返回退出
+		mui.back = function() {
+			if (!first) {
+				first = new Date().getTime();
+				mui.toast('再按一次退出应用');
+				setTimeout(function() {
+					first = null;
+				}, 1000);
+			} else {
+				if (new Date().getTime() - first < 1000) {
+					plus.runtime.quit();
+				}
+			}
+		};
+
+	</script>
+</html>

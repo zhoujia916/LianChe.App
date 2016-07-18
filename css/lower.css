@@ -1,0 +1,58 @@
+.pz-icon-l span{background-image:url(img/back_icon.png);background-size:cover;}
+		.content{
+			margin-top:44px;
+		}
+		.mui-radio input[type=radio]:checked:before {
+				color: #ed5564;
+			}
+			
+			.mui-radio input[type=radio] {
+				position: absolute;
+				left: 6px !important;
+				float: left;
+				top:0;
+				padding: 0;
+				height: 18px;
+				width: 18px;
+			}
+			
+			.mui-input-row {
+				line-height: 20px;
+				overflow: visible;
+			}
+			
+			.mui-input-row label {
+				position: relative;
+				padding: 0 0 0 74px !important;
+				line-height: 20px;
+			}
+			
+			.mui-input-row label:before {
+				display: inline-block;
+				position: absolute;
+				content: ' ';
+				top: 2px;
+				left: 40px;
+				height: 20px;
+				width: 20px;
+				background-size: cover;
+			}
+			
+			.alipay:before {
+				background-image: url(img/zfb.jpg);
+			}
+			
+			.wxpay:before {
+				background-image: url(img/wx.jpg);
+			}
+			
+			.mui-input-row label h2 {
+				margin-right: 8px;
+			}
+			.pz-ul>li{
+				height: 51px;
+				padding: 15px 10px;
+			}
+			.pz-btn {
+				margin-top: 72px;
+			}

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" href="css/common.css" />
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/mui.picker.min.css" />
+		<style>
+.sel-l,.sel-r{width:50%;box-sizing:border-box}
+.sel-l h3,.sel-r h3{margin-right:10px}
+.sel-l *,.sel-r *{display:inline-block;position:relative}
+.span-style{width:82px;height:22px;margin-top:-1px}
+.span-style span{line-height:20px;box-sizing:border-box;width:48%;height:100%;font-size:11.5px;color:#919499;text-align:center;float:left;border-radius:3px;border:1px solid #dadada}
+.span-style span:first-child{border-right:0;border-top-right-radius:0;border-bottom-right-radius:0}
+.span-style span:last-child{border-top-left-radius:0;border-bottom-left-radius:0;border-left:none}
+.sel-active{border:none!important;background:#7ecef4;color:#fff!important;line-height:22px!important}
+.mui-numbox{width:30px;padding:0 25px;border:solid 1px #dadada}
+.pz-pic-box{position:relative;float:left;margin-top:5px;margin-left:5px;background-image:url(img/pic_bg_03.jpg)}
+.mui-checkbox input[type=checkbox]:checked:before,.mui-radio input[type=radio]:checked:before{color:#7ecef4}
+.addparts{height:0;transition:height .3s;-webkit-transition:height .3s}
+.mui-radio input[type=radio]{position:absolute;left:6px!important;float:left;top:-1px;padding:0;height:18px;width:18px}
+.mui-input-row{height:20px;line-height:20px;overflow:visible}
+.mui-input-row label{position:relative;padding:0 0 0 25px!important;line-height:20px}
+.mui-input-row label>h4{float:right}
+.pz-btn.add-color.pz-btn-width{background:RGB(160,160,168)}
+.pz-confirm{border-radius:5px;box-shadow:0 0 1px 5px rgba(0,0,0,.1);text-align:left;position:relative;margin:150px auto;width:70%;padding:45px 15px 24px;background:#f3f3f3;opacity:0;transition:0.3s linear;-webkit-transition:0.3s linear}
+		</style>
+	</head>
+	<body>
+		<header class="pz-header">
+			<div class='pz-icon-l mui-action-back'><span></span></div>
+			<div id='title' class="pz-title">发布车源</div>
+		</header>
+		<div class='pz-content'>
+			<ul class='pz-ul clearfix'>
+				<li class='pz-deep-border'>
+					<h2 class='b'>必填项</h2>
+				</li>
+				<li class='nav a pz-multi-line' data-type='default' data-href='select-brand-list.html' data-title='选择品牌'>
+					<h3>车型</h3>
+					<h4 id='select-brand' data-details=''>选择品牌</h4>
+				</li>
+				<li class='nav write-value' data-type='number'>
+					<h3>官方指导价（万）</h3>
+					<h4 id='officalPrice' data-name='officalPrice'>填写价格</h4>
+				</li>
+				<li class='nav get-time'>
+					<h3>开始时间</h3>
+					<h4 id='beginTimeString' data-name='beginTimeString'>选择时间</h4>
+				</li>
+				<li class='nav get-time'>
+					<h3>结束时间</h3>
+					<h4 id='endTimeString' data-name='endTimeString'>选择时间</h4>
+				</li>
+				<span class='pz-fence'></span>
+				<ul class="pz-ul color-list"> 
+					<li class='nav write-value'>
+						<h3>外观颜色</h3>
+						<h4 class='outer-color' id='outer-color'>填写颜色</h4> 
+					</li>
+					<li class='nav write-value'>
+						<h3>内饰颜色</h3>
+						<h4 class='inner-color' id='inner-color'>填写颜色</h4>
+					</li>
+					<li>
+						<div class='sel-l'>
+							<h3 class='pz-left'>行情</h3>
+							<div class='span-style pz-left'>
+								<span class='sel-active'>加</span>
+								<span>下</span>
+							</div>
+						</div>
+						<div class='sel-r'>
+							<div class='span-style pz-right'>
+								<span class='sel-active'>价格</span>
+								<span class='per-unit'>点数</span>
+							</div>
+							<h3 class='pz-right'>优惠</h3>
+						</div>
+					</li>
+					<li class='nav write-value' data-type='number'>
+						<h3 class='price-unit'>行情价格（元）</h3>
+						<h4 id='cut-price' class='cut-price'>填写价格</h4>
+					</li>
+					<li>
+						<h3>数量（台）</h3>
+						<div class="pz-numbox">
+							<button class="pz-numbox-btn-minus" type="button">-</button>
+							<input class="pz-numbox-input" type="number" value='1'/>
+							<button class="pz-numbox-btn-plus" type="button">+</button>
+						</div>
+					</li>
+				</ul>
+				<span class='pz-fence' id='flag'></span>
+				<div class="pz-btn add-color pz-btn-width">添加新颜色</div>
+				<span class='pz-fence'></span>
+				<li class='pz-deep-border'>
+					<h2 class='b'>选填项（信息越完整，越有机会达成交易）</h2></li>
+				<li class='nav' id='showCityPicker3'>
+					<h3>仓库信息</h3>
+					<h4 id='cityResult3' data-details=''>请选择</h4>
+				</li>
+				<li>
+					<h3>发票类型</h3>
+					<div>
+						<div class="mui-input-row mui-radio pz-right">
+							<label for='zfb' class='zzfp'><h4>增值税发票</h4></label>
+							<input name="radio1" type="radio" id='zzfp' value=2>
+						</div>
+						<div class="mui-input-row mui-radio pz-right">
+							<label for='zfb' class='ptfp'><h4>普通发票</h4></label>
+							<input name="radio1" type="radio" id='ptfp' checked value=1>
+						</div>
+					</div>
+				</li>
+				
+				<li>
+					<h3>是否加配</h3>
+					<div class='mui-checkbox'>
+						<input id='hasParts' type="checkbox" >
+					</div>
+				</li>
+				<ul class='pz--ul addparts'>
+					<li class='nav write-value'>
+						<h3>加配描述</h3>
+						<h4 id='parts' data-name='parts'>填写描述</h4>
+					</li>
+					<li class='nav write-value' data-type='number'>
+						<h3>加配金额</h3>
+						<h4 id='partsPrice' data-name='partsPrice'>填写金额</h4>
+					</li>
+				</ul>
+				<li class='nav write-value pz-multi-line'>
+					<h3>备注</h3>
+					<h4 id='remark' data-name='remark'>填写备注</h4>
+				</li>
+				<li class='clearfix' style='height: auto;'>
+					<h3>上传图片（建议2张以上，默认第一张为封面图片）</h3>
+					<div id='pic-content' style='float:none;margin-top:20px'>
+						<div class='pz-pic-box'></div>
+					</div>
+				</li> 
+			</ul>
+			<div class='pz-btn pz-btn-width submit' style='margin-top:20px;margin-bottom:30px'>提交</div>
+		</div>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/exif.js" ></script>
+	<script type="text/javascript" src="js/common.js" ></script>
+	<script type="text/javascript" src="js/template.js" ></script>
+	<script type="text/javascript" src="js/to-fill-value.js" ></script>
+	<script type="text/javascript" src="js/mui.picker.min.js" ></script>
+	<script src="js/city.data.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/city.data-3.js" type="text/javascript" charset="utf-8"></script>
+	<script>
+		mui.init();
+		
+		mui.plusReady(function(){
+			app.hiddenIndicator()
+		})
+		
+		var picUrl='';
+		(function() {
+			web.qs('.pz-pic-box').addEventListener('tap',sendPic,false)
+			
+			function createNew(){//创建新的初始化
+				var len=web.qsa('#pic-content div').length;
+				if(web.qsa('#pic-content div')[len-1].hadLoad){
+					var oD=web.createDom("<div class='pz-pic-box'></div>")
+					web.qs('#pic-content').appendChild(oD);
+					oD.addEventListener('tap',sendPic,false);
+				}
+			}
+			
+			function sendPic(){
+				var _this=this;
+				upPicFromGallery.options={
+					server: upPic,//服务器地址：图片文件->服务器 
+					showBox: _this,//图片预览容器
+					fileKey: 'upfile',//api 图片键名
+					type: "car",//api 图片干啥用的
+					ratio: 0.6,
+					width: '640px',
+					height: '384px',
+					uploadSuccess: uploadSuccess //上传成功回调 
+				}
+				upPicFromGallery.appendByGallery();
+				this.hadLoad=true;
+			}
+			
+			function uploadSuccess(pic){
+				picUrl+=pic+'※';
+				createNew();
+			}
+		})();
+		
+		(function($){
+			/* 行情,价格选项点击事件*/
+			function registerSpanHandler(){
+				var a=web.qsa('.span-style span');
+				for(var i=0; i<a.length; i++){
+					if(!a[i].hadRegister){
+						a[i].addEventListener('tap',function(){
+							var oCurParent=this.parentNode.parentNode.parentNode;
+							var oNextSibling=this.parentNode.parentNode.parentNode.nextElementSibling
+							for (var i = 0; i < 2; i++) {
+								this.parentNode.children[i].classList.remove('sel-active');
+							}
+							this.classList.add('sel-active');
+							if(!oCurParent.querySelector('.per-unit').classList.contains('sel-active')){
+								oNextSibling.querySelector('.price-unit').innerText='优惠价格（元）';
+							}else{
+								oNextSibling.querySelector('.price-unit').innerText='优惠价格（%）';
+							}
+						},false);
+						a[i].hadRegister=true
+					}
+				}
+			}
+			registerSpanHandler();
+			
+			(function pzNumbox(m,p,i) {//数字pick
+				var oI=web.qs(i);
+				web.unsignedNumbBox(i);
+				web.qs(m).addEventListener('touchend', function() {
+					if(parseInt(oI.value)<=1) return;
+					oI.value=parseInt(oI.value)-1;
+				}, false);
+				web.qs(p).addEventListener('touchend', function() {
+					oI.value=parseInt(oI.value)+1;
+				}, false);
+			})('.pz-numbox-btn-minus' , '.pz-numbox-btn-plus', '.pz-numbox-input');
+			
+			var addCount=1;
+			web.qs('.pz-btn.add-color').addEventListener('tap',function(){//增加添加颜色 
+				var html='<ul class="pz-ul color-list"><div class="pz-div-header"><span></span></div><li class="nav write-value"><h3>外观颜色</h3><h4 id="outer-color'+addCount+'" class="outer-color">填写颜色</h4></li><li class="nav write-value"><h3>内饰颜色</h3><h4 id="inner-color'+addCount+'" class="inner-color">填写颜色</h4></li><li><div class="sel-l"><h3 class="pz-left">行情</h3><div class="span-style pz-left"><span class="sel-active">加</span><span>下</span></div></div><div clas s="sel-r"><div class="span-style pz-right"><span class="sel-active">价格</span><span class="per-unit">点数</span></div><h3 class="pz-right" style="margin-right: 10px">优惠</h3></div></li><li class="nav write-value" data-type="number"><h3 class="price-unit">行情价格（元）</h3><h4 id="cut-price'+addCount+'" class="cut-price">填写价格</h4></li><li><h3>数量（台）</h3><div class="pz-numbox"><button class="pz-numbox-btn-minus" type="button">-</button><input class="pz-numbox-input" type="number" value="1" /><button class="pz-numbox-btn-plus" type="button">+</button></div></li></ul>';
+				var o=web.createDom(html);
+				var oFence=web.createDom("<span class='pz-fence'></span>");
+				web.qs('.pz-ul.clearfix').insertBefore(o,web.qs('#flag'));
+				web.qs('.pz-ul.clearfix').insertBefore(oFence,o);
+				registerSpanHandler();//注册事件
+				registerWrireValueHandler();
+				(function(){
+					var oI=o.querySelector('.pz-numbox-input');
+					web.unsignedNumbBox(oI);
+					o.querySelector('.pz-numbox-btn-minus').addEventListener('tap', function() {
+						if(parseInt(oI.value)<=1) return;
+						oI.value=parseInt(oI.value)-1;
+					}, false);
+					o.querySelector('.pz-numbox-btn-plus').addEventListener('tap', function() {
+						oI.value=parseInt(oI.value)+1;
+					}, false);
+					o.querySelector('.pz-div-header span').addEventListener('tap', function() {
+						web.qs('.pz-ul.clearfix').removeChild(this.parentNode.parentNode.previousElementSibling);
+						web.qs('.pz-ul.clearfix').removeChild(this.parentNode.parentNode);
+						addCount--;
+					}, false);
+				})();
+				addCount++;
+			},false);
+			
+			web.qs('#hasParts').addEventListener('click',function(){
+				var o=web.qs('.pz--ul.addparts');
+				if(this.checked){
+					o.style.height=2*o.children[0].offsetHeight+'px'
+				}else{
+					o.style.height=0;
+				}
+			},false);
+			
+			$('.pz-ul').on('tap', '.get-time', function() {
+				var _this=this;
+				plus.nativeUI.pickDate(function(e) {
+					var d = e.date;
+					_this.children[1].innerHTML=d.getFullYear() + "-" + web.addZero(d.getMonth() + 1) + "-" + web.addZero(d.getDate());
+				}, function(e) {});
+			}, false);
+		})(mui);	
+		
+		/*初始开始和结束时间*/
+		(function(){
+			var oDate=new Date();
+			function setBeginTime(){
+				web.qs('#beginTimeString').innerText=oDate.getFullYear()+'-'+web.addZero(oDate.getMonth()+1)+'-'+web.addZero(oDate.getDate());
+			}
+			setBeginTime()
+			function setEndTime(){
+				oDate.setDate(oDate.getDate()+60);
+				web.qs('#endTimeString').innerText=oDate.getFullYear()+'-'+web.addZero(oDate.getMonth()+1)+'-'+web.addZero(oDate.getDate());
+			}
+			setEndTime()
+		})();
+		
+		(function(){
+			var oMask=new Mask();
+			function check(value){
+				return /^(选择品牌|填写价格|填写颜色|请选择|请填写|填写备注|选择时间|填写描述|填写金额|行情价格)$/g.test(value);
+			}
+			web.qs('.pz-btn.submit').addEventListener('tap',function(){
+				var param={},cars='';
+				//指导价
+				if(check(web.qs('#officalPrice').innerText)){
+					return pzToast('请填写官方指导价！');
+				}else{
+					param.officalPrice=parseFloat(web.qs('#officalPrice').innerText)*10000;
+					if(!(100<param.officalPrice<1000*10000)){
+						return pzToast('官方价应是0.01万元到1000万！');
+					}else if(param.officalPrice%100!=0){
+						return pzToast('官方价最多两位小数！');
+					}
+					cars='官方指导价：'+web.qs('#officalPrice').innerText+'万<br/>';
+				}
+				
+				if(!web.getItem('isAuth')){
+					return pzToast('您还未认证！不能发布车源！');
+				}
+				//图片是否上传
+				param.pic=picUrl.replace(/※$/g,''); 
+				if(param.pic==''){
+					return pzToast('请上传图片！');
+				}
+				//获取品牌
+				if(check(web.qs('#select-brand').innerText)){
+					return pzToast('请选择品牌！');
+				}else{
+					var oBrand=JSON.parse(web.qs('#select-brand').dataset.details)
+					for(keys in oBrand){
+						if(!/name1|name2|name3/g.test(keys)) 
+						param[keys]=oBrand[keys];
+					}
+					cars+='车型：'+web.qs('#select-brand').innerHTML.replace(/\<br>/g,'&nbsp; &nbsp;')+'<br/>';
+					oBrand=null;
+				}
+				
+				//获取时间
+				if(web.avlidDate(web.qs('#beginTimeString').innerText,'-')){
+					param.beginTimeString=web.qs('#beginTimeString').innerText
+				}else{
+					return pzToast('开始时间不能小于今天！');
+				}
+				if(web.avlidDate(web.qs('#endTimeString').innerText,'-')){
+					param.endTimeString=web.qs('#endTimeString').innerText
+				}else{
+					return pzToast('结束时间不能小于今天！');
+				}
+				
+				//获取颜色
+				param.quoteType='';
+				param.salePriceType='';
+				param.insideColor='';
+				param.outsideColor='';
+				param.saleAmount='';
+				param.totalNumber='';
+				var allColor=web.qsa('.pz-ul.color-list');
+				for(var i=0; i<allColor.length; i++){
+					var oCur=allColor[i],separator='※';
+					var quoteType=0,salePriceType=0;
+					var cutPrice=oCur.querySelector('.cut-price').innerText,
+						innerColor=oCur.querySelector('.inner-color').innerText,
+						outerColor=oCur.querySelector('.outer-color').innerText,
+						carNumb=oCur.querySelector('.pz-numbox-input').value;
+					if(check(innerColor)){
+						return pzToast('请填写内饰颜色！');
+					}
+					if(check(outerColor)){
+						return pzToast('请填写外饰颜色！');
+					}
+					if(check(cutPrice)){
+						return pzToast('请重新填写价格！');
+					}
+					if(parseFloat(cutPrice)<0){
+						return pzToast('优惠价格不能小于0！');
+					}
+					if(parseInt(carNumb)<=0){
+						return pzToast('数量不正确！');
+					}
+					cars+=(i+1)+'、外饰颜色：'+outerColor+'&nbsp; &nbsp;内饰颜色：'+innerColor+'<br/>';
+					mui(oCur.querySelectorAll('.span-style span')).each(function(){
+						if(this.classList.contains('sel-active')){
+							if(this.innerText=='加') {param.quoteType+=1+separator;quoteType=1;cars+='行情加：'+cutPrice}
+							if(this.innerText=='下') {param.quoteType+=2+separator;quoteType=2;cars+='行情下：'+cutPrice}
+							if(this.innerText=='点数') {param.salePriceType+=1+separator;salePriceType=1;cars+='%'}
+							if(this.innerText=='价格') {param.salePriceType+=2+separator;salePriceType=2;cars+='元'}
+						}
+					})
+					cars+='&nbsp; &nbsp;数量：'+carNumb+'<br/>';
+					if(parseFloat(cutPrice)>param.officalPrice&&salePriceType==2&&quoteType==2){
+						return pzToast('行情价格（下，价格）不能高于官方价！');
+					}
+					if(parseFloat(cutPrice)>100&&salePriceType==1&&quoteType==2){
+						return pzToast('行情价格（下，点数）不能超过100%！');
+					}
+					if(parseFloat(cutPrice)%1!=0&&salePriceType==2){
+						return pzToast('行情价格（价格）应为元的整数倍！');
+					}
+					if(parseFloat(cutPrice)*10%1!=0&&salePriceType==1){
+						return pzToast('行情价格（点数）最多1位小数！');
+					}
+					param.insideColor+=innerColor+separator;
+					param.outsideColor+=outerColor+separator;
+					param.saleAmount+=cutPrice+separator;
+					param.totalNumber+=carNumb+separator;
+				}
+				param.quoteType=param.quoteType.replace(/※$/g,'');
+				param.salePriceType=param.salePriceType.replace(/※$/g,'');
+				param.insideColor=param.insideColor.replace(/※$/g,'');
+				param.outsideColor=param.outsideColor.replace(/※$/g,'');
+				param.saleAmount=param.saleAmount.replace(/※$/g,'');
+				param.totalNumber=param.totalNumber.replace(/※$/g,'');
+				//获取仓库信息
+				if(!check(web.qs('#cityResult3').innerText)){
+					var oHouse=JSON.parse(web.qs('#cityResult3').dataset.details);
+					param.province=oHouse.province;
+					param.city=oHouse.city;
+				}
+				//获取发票类型
+				mui(document.getElementsByName('radio1')).each(function(idx,item){
+					if(item.checked){
+						param.invoiceType=this.value;return;
+					}
+				});
+				//获取加配信息
+				if(web.qs('#hasParts').checked){
+					param.hasParts=2;
+					if(check(web.qs('#parts').innerText)){
+						return pzToast('请填写加配描述！');
+					}else{
+						param.parts=web.qs('#parts').innerText
+					}
+					if(check(web.qs('#partsPrice').innerText)){
+						return pzToast('请填写加配价格！');
+					}else{
+						if(parseFloat(web.qs('#partsPrice').innerText)<0||parseFloat(web.qs('#partsPrice').innerText)%1!=0){
+							return pzToast('加配价格大于0并为元的整数倍！');
+						}
+						param.partsPrice=web.qs('#partsPrice').innerText;
+					}
+				}else{
+					param.hasParts=1;
+					delete param.parts
+					delete param.partsPrice
+				}
+				//获取描述
+				if(check(web.qs('#remark').innerText)){
+					//delete param.remark;
+				}else{
+					param.remark=web.qs('#remark').innerText
+				}
+				
+				//添加userId
+				param.addUserId=web.getItem('userId');
+				var popInfo=pzConfirm(cars,oMask,function(r){
+					r&&(post({
+						url: autocarAdd,
+						data: param,
+						success:function(data){
+							plus.nativeUI.toast("发布成功！",{duration:"long"});
+							setTimeout(mui.back,50);
+						},
+						waiting: true
+					}));
+				})
+				oMask.create().append(popInfo);
+			},false);
+		})();
+		/**
+		 * 城市选择器
+		 * from mui picker
+		 */
+		(function($, doc) {
+			var cityPicker3=null;
+			var showCityPickerButton = doc.getElementById('showCityPicker3');
+			var cityResult3 = doc.getElementById('cityResult3');
+			showCityPickerButton.addEventListener('tap', function(event) {
+				if(!cityPicker3){
+					cityPicker3 = new $.PopPicker({
+						layer: 2
+					});
+					cityPicker3.setData(cityData3);
+				}
+				
+				cityPicker3.show(function(items) { 
+					cityResult3.innerText = (items[0] || {}).text + " " + (items[1] || {}).text ;
+					var j={};
+					j.province=(items[0] || {}).value;
+					j.city=(items[1] || {}).value;
+					cityResult3.dataset.details=JSON.stringify(j);
+					/*return false;//返回 false 可以阻止选择框的关闭*/
+				});
+			}, false);
+		})(mui, document);
+		/**
+		 * 其他页面的用evalJS调用的函数对象
+		 */
+		var oForEvalJS={
+			setBrand:function(j){
+				web.qs('#select-brand').innerHTML=j.name1+'<br>'+j.name2+'<br>'+j.name3;
+				web.qs('#select-brand').dataset.details=JSON.stringify(j);
+			}
+		}
+	</script>
+</html>

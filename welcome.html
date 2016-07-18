@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<style>
+			body,html {width: 100%;height: 100%;background: RGB(214, 196, 174);}div {width: 100%;height: 100px;text-align: center;top: 40%;margin-top: -50px;color: #000;line-height: 100px;position: absolute;}
+		</style>
+	</head>
+
+	<body>
+		<div>欢迎点击进入</div>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/common.js" ></script>
+	<script>
+		mui.init({
+			keyEventBind: {
+				backbutton: false,
+				menubutton: false
+			}
+		});
+		document.addEventListener('tap', function() {
+			app.self().close();
+		}, false);
+	</script>
+
+</html>

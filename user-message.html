@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" href="css/common.css" />
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<style>
+html,body{background:#f3f3f3!important}
+.content ul li{border-bottom:1px solid #dedede}
+.content ul li{padding:9px 13px 17px;box-sizing:border-box}
+.content li div:first-child{margin-bottom:8px}
+.content li div:last-child h2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.content li div:first-child h3:last-child{float:right}
+.t-active{color:#333}
+.c-active{color:#03a9f4}
+.pz-icon-l span{background-image:url(img/back_icon.png);background-size:cover;}
+.mui-segmented-control.mui-segmented-control-inverted~.mui-slider-progress-bar {background-color: #fff;}
+.mui-slider-progress-bar {height: 3px;border-bottom:1px solid #dedede}
+.mui-scrollbar-vertical {top: 0;right: 2px;bottom: 2px;width: 4px;}
+.mui-scrollbar-indicator {border-radius: 0;width: 150%;background: rgba(213, 213, 213, .9);}
+.mui-slider:before{content: ' ';display: block;position: absolute;width: 100%;height: 3px;top: 0;left: 0;background-color: #03a9f4;}
+.mui-col-xs-2{width:20%}.refresh{position:fixed;left:0;bottom:0;z-index:1000}
+.load{position:fixed;right:0;bottom:0;z-index:1000}
+.mui-pull-bottom-tips{text-align:center;font-size:15px;line-height:40px;color:#777}
+.mui-slider-indicator.mui-segmented-control{background-color:#efeff4}
+.mui-scroll .mui-loading{margin-top:150px;background-color:#f3f3f3}
+.mui-table-view:before,.mui-table-view:after {height: 0;}
+		</style>
+	</head>
+
+	<body>
+		<header class="pz-header">
+			<div class='pz-icon-l mui-action-back'><span></span></div>
+			<div id='title' class="pz-title">消息中心</div>
+		</header>  
+		<div class="pz-content">
+			<div class="mui-scroll-wrapper mui-fullscreen">
+				<div class="mui-scroll content">
+					<ul class="mui-table-view show-msg">
+						<div class="mui-loading">
+							<div class="mui-spinner">
+							</div>
+						</div>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/common.js" ></script>
+	<script src="js/mui.pullToRefresh.js"></script>
+	<script type="text/javascript" src="js/template.js"></script>
+	<script>
+		mui.init();
+		
+		web.qs('.pz-content').style.height=web.bodyHeight()-44+'px';
+		web.scroll('.mui-scroll-wrapper');
+		
+		mui.ready(function(){
+			mui('.mui-scroll').pullToRefresh({
+				/*down: {
+					callback: refreshFavs
+				},*/
+				up: {
+					callback: upToLoad
+				}
+			});
+			hideAllMuiTip();
+		});
+		
+		mui.plusReady(function(){
+			app.hiddenIndicator()
+			setTimeout(function(){
+				upToLoad();
+			},250);
+		})
+		
+		var pageIndex=1;
+		var firstRequest=1;
+		function upToLoad(){
+			var param={};
+			param.pageIndex=pageIndex
+			param.pageSize=10
+			param.userId=web.getItem('userId');
+			setTimeout(function(){
+				post({
+					url:listMessage,
+					data:param,
+					success:function(data){
+						if(data.data){
+							if(firstRequest){
+								web.qs('.show-msg').innerHTML='';
+							}
+							data.data.forEach(function(item){
+								var html='<li class="s" data-msgid="'+item.msgId+'"><div><h3>推送消息</h3><h3>'+item.addTime+'</h3></div><div><h2 class="">'+item.msgTitle+'</h2></div></li>';
+								web.qs('.content ul').appendChild(web.createDom(html));
+							})
+							mui('.mui-scroll').pullToRefresh().endPullUpToRefresh(false);
+							showMuiTip();
+							firstRequest=0
+							pageIndex++;
+						}else{
+							if(firstRequest){
+								web.qs('.show-msg').innerHTML='';
+							}
+							mui('.mui-scroll').pullToRefresh().endPullUpToRefresh(true);
+							if(firstRequest){
+								firstInNoMsg();
+								firstRequest=0;
+							}else{
+								showMuiTip();
+							}
+						}
+						
+					}
+				});
+			},300);
+		}
+		
+		mui('.content').on('tap','li',function(){
+			app.openVW('message-details.html')
+			var title = this.children[0].children[0].innerText;
+			var msgId=this.dataset.msgid;
+			mui.fire(app.VW('message-details.html'), 'newsId', {
+				msgId: msgId,
+				title: title
+			});
+		})
+		
+		function firstInNoMsg(){
+			var tips=web.qs('.mui-pull-bottom-tips');
+			web.setStyle(tips,{display:'block',marginTop:'150px'});
+		}
+		
+		function hideAllMuiTip(){
+			var tips=web.qs('.mui-pull-bottom-tips');
+			web.setStyle(tips,{'display':'none'});
+		}
+		
+		function showMuiTip(){
+			var tips=web.qs('.mui-pull-bottom-tips');
+			web.setStyle(tips,{display:'block',marginTop:'0'});
+		}
+	</script>
+
+</html>

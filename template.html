@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-web-capable" content="yes">
+		<meta name="apple-mobile-web-web-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/common.css" />
+		<style>
+			.mui-pull-top-pocket { top: 44px;}
+			.mui-loading{margin-top:194px;background-color:#f3f3f3}
+		</style>
+	</head>
+	<body>
+		<header class="pz-header">
+			<div class='mui-action-back pz-icon-l'><span></span></div>
+			<div id='title' class="pz-title"></div>
+		</header> 
+		<div class="mui-loading">
+			<div class="mui-spinner">
+			</div>
+		</div>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript">
+		mui.init();
+	
+		var contentWebview = null,
+			self = null,
+			immediate=true;//immediate back;default the children window have no handler
+		mui.plusReady(function() {
+			self = plus.webview.currentWebview();
+			
+		});
+		mui.back = function() {
+			self.hide('auto');
+			setTimeout(function() {
+				titleElem.className = 'pz-title mui-fadeout';
+				titleElem.innerText = '';
+				if (contentWebview == null) {
+					contentWebview = self.children()[0];
+				}
+				contentWebview.evalJS('if(typeof letSonDo!="undefined"){letSonDo()}');//子页面执行函数
+				contentWebview.hide("none");
+			}, 400);
+		}
+		var titleElem = document.getElementById("title");
+		var from,fn;
+		window.addEventListener("updateHeader", function(e) {
+			var title = e.detail.title;
+			var href = e.detail.target;
+			var aniShow = e.detail.aniShow;
+			if(e.detail.fn){
+				fn = e.detail.fn;
+				from=e.detail.from;
+			}
+			titleElem.innerHTML = title;
+			titleElem.className = "pz-title mui-fadein";
+
+			if (mui.os.android && aniShow && parseFloat(mui.os.version) >= 4.4) {
+				if(self==null){ self = plus.webview.currentWebview(); return;}
+				if (contentWebview == null) {
+					contentWebview = self.children()[0];
+				}
+				/www\/(.+\.html)$/.exec(contentWebview.getURL());
+				if (RegExp.$1 != href) {
+					contentWebview.loadURL(href);
+				} else {
+					contentWebview.show();
+				}
+				setTimeout(function() {
+					self.show(aniShow, 250);
+				}, 10);
+			}
+		});
+		
+		var oldback=mui.back;
+		mui.back=function(){
+			if(immediate){
+				oldback();
+			}else{
+				if(contentWebview==null){
+					contentWebview = self.children()[0];
+				}
+				contentWebview.evalJS('_letSonDo()');//不是立即让子页面执行的函数
+			}
+				
+		}
+	</script>
+
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" href="css/common.css" />
+		<link rel="stylesheet" href="css/mui.picker.min.css" />
+		<link rel="stylesheet" href="css/mui.min.css" />
+	</head>
+	<body>
+		<header class="pz-header">
+			<div class='pz-icon-l mui-action-back'><span></span></div>
+			<div id='title' class="pz-title">完善个人信息</div>
+		</header>
+		<div class='pz-content'>
+			<ul class="pz-ul">
+				<li class='nav write-value'>
+					<h3>姓名</h3>
+					<h4 id='realName' class='forsubmit' data-name='realName'>填写姓名</h4>
+				</li>
+				<li class='nav write-value' data-type='number'>
+					<h3>手机号</h3>
+					<h4 id='phone' class='forsubmit' data-name='phone'>填写手机号</h4>
+				</li>
+				<li class='nav write-value'>
+					<h3>商家名称</h3>
+					<h4 id='shopName' class='forsubmit' data-name='shopName'>填写名称</h4>
+				</li>
+				<li class='nav a pz-multi-line' data-href='select-brand.html' data-title='选择品牌' data-type='default' data-fn='brand'>
+					<h3>主营品牌</h3>
+					<h4 id='shopBrands' class='forsubmit' data-name='shopBrands'>请选择</h4>
+				</li>
+				<li class="nav">
+					<h3>商家性质</h3>
+					<h4 id='shopType' data-name='shopType' data-value='0'>请选择</h4>
+				</li>
+				<li class='nav' id='showCityPicker3'>
+					<h3>仓库信息</h3>
+					<h4 id='shopBase' class='forsubmit' data-name='shopBase'>请选择</h4>
+				</li>
+				<li class='nav write-value pz-multi-line'>
+					<h3>详细地址</h3>
+					<h4 id='shopDesc' class='forsubmit' data-name='shopDesc'>填写地址</h4>
+				</li>
+			</ul>
+			<div class='pz-btn pz-btn-width' style='margin-top:30px'>保存</div>
+		</div>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script>
+		mui.init();
+	</script>
+	<script type="text/javascript" src="js/common.js" ></script>
+	<script type="text/javascript" src="js/template.js" ></script>
+	<script type="text/javascript" src="js/to-fill-value.js" ></script>
+	<script type="text/javascript" src="js/mui.picker.min.js" ></script>
+	<script src="js/city.data.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/city.data-3.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript" charset="UTF-8">
+		(function($, doc) {
+			var cityPicker3=null;
+			var showCityPickerButton = doc.getElementById('showCityPicker3');
+			var shopBase = doc.getElementById('shopBase');
+			showCityPickerButton.addEventListener('tap', function(event) {
+				if(!cityPicker3){
+					cityPicker3 = new $.PopPicker({
+						layer: 2
+					});
+					cityPicker3.setData(cityData3);
+				}
+				
+				cityPicker3.show(function(items) {
+					shopBase.innerText = (items[0] || {}).text + " " + (items[1] || {}).text;
+					var j={};
+					j.province=(items[0] || {}).value;
+					j.city=(items[1] || {}).value;
+					shopBase.dataset.details=JSON.stringify(j);
+				});
+			}, false);
+		})(mui, document); 
+		
+		web.qs('#shopType').parentNode.addEventListener('tap',function(){
+			var bts=[{title:"4S店"},{title:"有实体店二网"},{title:"无实体店二网"},{title:"个人"}];
+			plus.nativeUI.actionSheet({title:"请选择商家性质",cancel:"取消",buttons:bts},
+				function(e){
+					web.qs('#shopType').innerText=(e.index>0)?bts[e.index-1].title:"请选择";
+					if(0<e.index<=4){
+						web.qs('#shopType').dataset.value=e.index;
+					}
+				}
+			);
+		},false);
+		
+		mui.plusReady(function(){
+			getUserPro();
+			if(web.getItem('isAuth')){
+				web.qs('.pz-btn.pz-btn-width').style.backgroundColor='RGB(160,160,168)';
+				var preventTap=web.createDom('<div style="position:fixed;top:44px;left:0;width:100%;height:100%;z-index:1000;"></div>');
+				web.qs('body').appendChild(preventTap);
+				preventTap.addEventListener('tap',function(){
+					pzToast('已认证，无法修改！');
+				},false)
+			}
+		});
+		
+		function getUserPro(){//获取本地储存
+			var j=web.getItem(["realName","phone","shopName","shopBrands","shopType","shopBase","shopDesc"]);
+			for(keys in j){
+				if(j[keys]){
+					if(keys=="shopType"){
+						if(j[keys]!='0'){
+							web.qs('#'+keys).innerText=["4S店","有实体店二网","无实体店二网","个人"][j[keys]];
+							web.qs('#shopType').dataset.value=j[keys];
+						}
+					}else{
+						web.qs('#'+keys).innerText=j[keys];
+					}
+				}
+			}
+		}
+		
+		var oForEvalJS={
+			setBrand:function(j){
+				web.qs('#shopBrands').innerHTML=j;
+			},
+		}
+		
+		web.qs('.pz-btn').addEventListener('tap', function() {//to member-center interface
+			var param=web.getSubmitParam('.forsubmit');
+			for(var keys in param){
+				if(/^(填写姓名|填写手机号|填写名称|请选择|填写地址)$/.test(param[keys])){
+					pzToast('请把信息填写完整！'); return;
+				}
+			}
+			param.shopType=web.qs('#shopType').dataset.value;
+			param.userId=web.getItem('userId');
+			if(param.userId){
+				post({
+					url: updateProfile,
+					data: param,
+					success: function(data){
+						plus.nativeUI.toast("您所填写的信息提交成功！",{duration:"long"});
+						web.setItem(param);
+						setTimeout(mui.back,50);
+					}
+				});
+			}	
+		},false)
+	</script>
+</html>

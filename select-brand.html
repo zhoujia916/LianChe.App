@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" href="css/mui.indexedlist.css" />
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/common.css" />
+		<style>
+			html,body{background:rgba(0,0,0,.3)}img{display:block;height:100%;width:100%}.mui-indexed-list-group:before{height:0}.mui-indexed-list-group:after{background:#f5f5f5}.mui-indexed-list-bar{background:transparent!important}.mui-indexed-list-bar a{font-size:12.5px;color:#333}.mui-table-view{background:transparent}.pz-table-view-cell{padding:7px 10px;font-size:12.5px;color:#626262;background:#fff!important}.mui-indexed-list-group{font-size:12.5px;color:#333;font-weight:700;padding:1px 19px;background:#fff;margin-top:10px}.mui-indexed-list-group:first-child{margin-top:0}.active{background:}.pz-table-view-cell span{display:inline-block;width:40px;height:40px;vertical-align:middle;margin-right:10px}.pz-table-view-cell{border-bottom:1px solid #f5f5f5}.mui-table-view li:first-child{border-top:1px solid #f5f5f5}.pz-table-view-cell:after{width:0!important}.mui-table-view:before{height:0!important}.mui-table-view:after{height:0!important}.pz-table-view-cell.mui-active{width:100%!important}#brand{position:fixed;width:100%;top:0;opacity:1;z-index:2;transition:opacity .3s;-webkit-transition:opacity .3s}
+.pz-btn{width:70%;position:absolute;left:50%;bottom:0;margin-left:-35%;}
+.mui-icon-checkmarkempty{position:absolute;height:24px!important; width:24px!important;right:30px; top:15px;border-radius:12px;background-color:RGB(126, 206, 244);color:#fff}
+#brand-list li.mui-indexed-list-item{position:relative;}
+		</style>
+	</head>
+
+	<body>
+		<div class='pz-btn pz-btn-width'>确定</div>
+		<div id='brand' class="mui-indexed-list" >
+			<div class="mui-indexed-list-search mui-input-row mui-search" style='display: none; '>
+				<input type="search" class="mui-input-clear mui-indexed-list-search-input" placeholder="搜索机场">
+			</div>
+			<div class="mui-indexed-list-bar">
+				<a>A</a><a>B</a><a>C</a><a>D</a><a>E</a><a>F</a><a>G</a><a>H</a><a>I</a><a>J</a><a>K</a><a>L</a><a>M</a><a>N</a><a>O</a><a>P</a><a>Q</a><a>R</a><a>S</a><a>T</a><a>U</a><a>V</a><a>W</a><a>X</a><a>Y</a><a>Z</a>
+			</div>
+			<div class="mui-indexed-list-alert"></div>
+			<div class="mui-indexed-list-inner">
+				<div class="mui-indexed-list-empty-alert">没有数据</div>
+				<ul id='brand-list' class="mui-table-view">
+				</ul>
+				
+			</div>
+		</div>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/common.js"></script>
+	<script type="text/javascript" src="js/mui.indexedlist.js"></script>
+	<script type="text/javascript" src="js/brand.js" ></script>
+	<script type="text/javascript" src="js/read-brand.js" ></script>
+	<script>
+		mui.init();
+		var oIndexList=null;//index list init;
+		if (oIndexList==null){
+			web.qs('#brand').style.height = web.bodyHeight() - 44 + 'px';
+			oIndexList = new mui.IndexedList(web.qs('#brand'));
+		}
+		
+		mui('#brand-list').on('tap','li.mui-indexed-list-item',function(){
+			if(!this.selected){
+				this.appendChild(web.createDom('<span class="mui-icon mui-icon-checkmarkempty"></span>'));
+				this.selected=true;
+			}else{
+				this.removeChild(this.children[1]);
+				this.selected=false;
+			}
+		});
+		
+		web.qs('.pz-btn').addEventListener('tap',function(){
+			var brands='';
+			mui('#brand-list li.mui-indexed-list-item').each(function(){
+				if(this.selected){
+					brands+=(brands.length>0?' ':'')+this.innerText;
+					this.removeChild(this.children[1]);
+					this.selected=false;
+				}
+			});
+			app.VW('user-improve-info.html').evalJS('oForEvalJS.setBrand("'+brands+'")');
+			app.VW('default-main').evalJS('mui.back()');
+		},false);
+		
+	</script>
+</html>

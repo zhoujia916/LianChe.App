@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" href="css/common.css" />
+		<style>
+body,html{height:100%;width:100%;}
+.member-info{box-sizing:border-box;border-bottom:1px solid #dedede;margin-top:44px;height:77px;position:relative;padding:14px 0 0;margin-top:44px}
+.member-info>div:first-child div{width:52px;height:52px;border-radius:50%}
+.member-info img{max-width:100%;display:block}
+.member-info>div{width:25%;height:52px;float:left;position:relative}
+.member-info div h2,.member-info div h3{height:18px;width:100%;text-align:center;float:left}
+.member-info div h2{margin-top:8px}
+.member-addr{padding:12px 7.75%}
+.big{position:absolute;width:36px;height:100%;margin-left:15px}
+.big span{width:36px;height:14px}
+.menu{background:#fff;padding:41px 0 40px}
+.menu .row{display:-webkit-box;display:-webkit-flex;-webkit-box-pack:justify;-webkit-justify-content:space-between;width:77%;margin:0 auto;}
+.menu .row>div{width:19.6%;position:relative;text-align:center}
+.menu .row>div>div{width:100%;padding-bottom:100%;background-size:cover;margin:0 auto;border-radius:50%}
+.menu .row>div>h2{margin-top:12px;margin-left:-25%;height:20px;width:150%;text-align:center;white-space:nowrap}
+.menu .row2{margin-top:40px}
+.per-photo{max-width:52px;width:16.25%;margin-left:7.3%;background-image:url(img/member_photo.png);background-size: 100% 100%; background-position: center center;border-radius:50%;}
+#member-center .d1{background-color:#f8b551;background-image:url('img/member (1).png')}
+#member-center .d2{background-color:#80c269;background-image:url('img/member (4).png')}
+#member-center .d3{background-color:#7ecef4;background-image:url('img/member (5).png')}
+#member-center .d4{background-color:#ed5564;background-image:url('img/member (2).png')}
+#member-center .d5{background-color:#f29c9f;background-image:url('img/member (3).png')}
+#member-center .d6{background-color:#ffd512;background-image:url('img/member (6).png')}
+.login{margin:67px 16.6%}
+#login-page .d1 input,#login-page .d2 input{padding-left:15px;padding-right:25px;box-sizing:border-box;font-size:14px;border:0;outline:0;display:block;width:100%;height:43px;background:RGB(243,243,243)!important}
+#login-page .d2{margin-top:11px}
+#login-page .d3{margin-top:36px}
+#login-page .d4{margin-top:5px;height:45px;line-height:45px}
+::-webkit-input-placeholder{text-align:center;font-size:12.5px}
+#login-page{display:none;background:#ffffff;position:absolute;left:0;top:0;width:100%;height:100%;}
+#member-center{display:block;background:#ffffff;position:absolute;left:0;top:0;width:100%;height:100%;}
+		</style>
+	</head>
+	<body>
+		<header class='pz-header'>
+			<div class='pz-icon-r a' data-href='set.html' data-type='open'  data-title='设置'>
+				<span><img src="img/set.png" alt="" /></span>
+			</div>
+			<div class="pz-title">会员中心</div>
+		</header>
+		<div id='member-center'>
+			<div class='member-info'>
+				<div class='per-photo'></div>
+				<div>
+					<div>
+						<h2 class='get-data' id='point'>0</h2>
+						<h3>信誉度</h3>
+					</div>
+				</div>
+				<div>
+					<div>
+						<h2 class='get-data' id='orderNumber'>0</h2>
+						<h3>订单数</h3>
+					</div>
+				</div>
+				<div>
+					<div>
+						<h2 class='get-data' id='carNumber'>0</h2>
+						<h3>车源数</h3>
+					</div>
+				</div>
+			</div>
+			<div class="member-addr">
+				<h2>未实名认证，请去个人信息里实名认证</h2>
+			</div>
+			<span class='pz-fence'></span>
+			<div class='menu'>
+				<div class='row row1'>
+					<div>
+						<div class='d1 a' data-href='user-buy.html' data-title='我的购车' data-type='open'></div>
+						<h2>我的购车</h2>
+					</div>
+					<div>
+						<div class='d2 a'data-href='user-sell.html' data-title='我的销车' data-type='open'></div>
+						<h2>我的销车</h2>
+					</div>
+					<div> 
+						<div class='d3 a'data-href='user-info.html' data-type='open' data-title='个人信息'></div>
+						<h2>个人信息</h2>
+					</div>
+				</div>
+				<div class='row row2'>
+					<div>
+						<div class='d4 a'data-href='user-collect.html' data-type='open' data-title='我的收藏'></div>
+						<h2>我的收藏</h2>
+					</div>
+					<div>
+						<div class='d5 a'data-href='user-message.html' data-type='open'  data-title='消息中心'></div>
+						<h2>消息中心</h2>
+					</div>
+					<div>
+						<div class='d6 a' data-href='user-feedback.html' data-type='open'   data-title='功能反馈'></div>
+						<h2>功能反馈</h2>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id='login-page' >
+			<header class='pz-header'>
+				<div class="pz-title">登录注册</div>
+			</header>
+			<div class='login'>
+				<div class='d1'><input type="number" class='forsubmit' name='username' placeholder="手机号码" /></div>
+				<div class='d2'><input type="password" class='forsubmit' name='password' placeholder="密码，6-24位英文字母数字" /></div>
+				<div class='d3'>
+					<div id='login' class='pz-btn'>登录</div>
+				</div>
+				<div class='d4'>
+					<h2 class='pz-left a' data-href='user-retrieve-password.html' data-title='忘记密码' data-type='open'>忘记密码</h2>
+					<h2 class='pz-right a' data-href='user-register.html' data-title='手机号注册' data-type='open'>新用户注册</h2>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/common.js" ></script>
+	<script type="text/javascript" src="js/template.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+		mui.init({
+			keyEventBind: {
+				backbutton: false,
+				menubutton: false
+			}
+		});
+		
+		/*标记该页面显示的是登录页面还是会员中心*/
+		var pageStaus='login';
+		
+		var forEvalJS={
+			getMemberInfo:function(){
+				if(pageStaus=='login') return;//为注册页面是不发送请求
+				post({
+					url: autouserIndex,
+					data: web.getItem(['userId']),
+					success:function(data){
+						mui('.get-data').each(function(){
+							this.innerText=data.data[this.id];
+						});
+						if(data.data.isAuth){//本地没有缓存认证
+							web.setItem({
+								'isAuth': '1',
+								"phone":data.data.phone,
+								'realName':data.data.profile.realName,
+								'shopName':data.data.profile.shopName,
+								"shopBrands":data.data.profile.shopBrands,
+								"shopType":data.data.profile.shopType,
+								"shopBase":data.data.profile.shopBase
+							});
+							web.qs('.member-addr').innerHTML='<h2 class="ided">'+web.getItem('realName')+'</h2><br/><h3>'+web.getItem('shopName')+'</h3>';
+						}
+					},
+					waiting: true
+				});
+			},
+			login: function(){
+				web.qs('#member-center').style.display='none';
+				web.qs('#login-page').style.display='block';
+				pageStaus='login';
+			},
+			memberCenter:function(){
+				web.qs('#login-page').style.display='none';
+				web.qs('#member-center').style.display='block';
+				pageStaus='member-center';
+			},
+			updateUserPro: function(){//跟新用户信息和认证信息
+				if(web.getItem('userHead')){
+					web.qs('.per-photo').style.backgroundImage='url('+web.getItem('userHead')+'),url(img/member_photo.png)';
+				}
+				if(web.getItem('isAuth')){
+					var html='<h2 class="ided">'+web.getItem('realName')+'</h2><br/><h3>'+web.getItem('shopName')+'</h3>';
+					web.qs('.member-addr').innerHTML=html;
+				}
+			},
+			logout:function(){
+				web.qs('.member-addr').innerHTML='<h2>未实名认证，请去个人信息里实名认证</h2>';
+				web.qs('.per-photo').style.backgroundImage='url(img/member_photo.png)';
+				['point','orderNumber','carNumber'].forEach(function(item){
+					web.qs('#'+item).innerHTML='';
+				});
+			}
+		}
+		
+		mui.plusReady(plusReady)
+		
+		function plusReady() {
+			app.hiddenIndicator()
+			var cur = plus.webview.currentWebview();
+			cur.setStyle({
+				scrollIndicator: 'none'
+			});
+			if(web.getItem('userId')){
+				forEvalJS.memberCenter();
+				forEvalJS.updateUserPro();
+			}else{
+				forEvalJS.login();
+			}
+			
+			var perloadUrl = ['car-details.html', 'car-special-selling.html','sort-page.html'];
+			if(mui.os.android) perloadUrl.push('fill-in.html');
+			perloadUrl.forEach (function(item,i){
+				var sub_style={top: '0',bottom: '0'};
+				if(item=='sort-page.html'){
+					sub_style = {top: '74px' ,bottom: '0px',background: 'transparent'}
+				}
+				mui.preload({
+					url: item,
+					id: item,
+					styles: sub_style,
+					show: {autoShow: false}
+				});
+			});
+		}
+	
+		web.qs('#login').addEventListener('tap', function() {
+			var param=web.getSubmitParam('.forsubmit');
+			if(!web.validMobile(param.username)){
+				pzToast('手机号不正确！');return;
+			}
+			if(param.password.length<6){
+				pzToast('密码不能小于6位！');return; 
+			}
+			post({
+				url:loginSver,
+				data: param,
+				success:function(data){
+					web.setItem({'userId':data.data.userId+''});
+					if(data.data.userAvatar){
+						web.setItem({'userHead':data.data.userAvatar});
+					}
+					if(data.data.isAuth){//认证储存信息
+						web.setItem({
+							'isAuth': '1',
+							"phone":data.data.phone,
+							'realName':data.data.profile.realName,
+							'shopName':data.data.profile.shopName,
+							"shopBrands":data.data.profile.shopBrands,
+							"shopType":data.data.profile.shopType,
+							"shopBase":data.data.profile.shopBase
+						});
+					}
+					app.VW(plus.runtime.appid).evalJS('changeTab("0")');//跳至主界面
+					forEvalJS.updateUserPro();//跟新会员资料
+					forEvalJS.memberCenter();//转换至登录页
+				},
+				waiting: true
+			});
+		},false);
+		
+		/*上传图片*/
+		(function(){
+			web.qs('.per-photo').addEventListener('tap',function(){
+				upPicFromGallery.options={
+					server: upPic,//服务器地址：图片文件->服务器 
+					showBox: web.qs('.per-photo'),//图片预览容器
+					fileKey: 'upfile',//api 图片键名
+					type: "avatar",//api 图片干啥用的
+					ratio: 1, //比例压缩 可选
+					width:'200px', //宽高压缩 可选
+					height:'200px' ,//比例压缩->宽高压缩
+					uploadSuccess: uploadSuccess //图片url->服务器 成功回调 
+				}
+				upPicFromGallery.appendByGallery();
+			},false);
+				
+			function uploadSuccess(pic){
+				post({//再向服务器传送图片url
+					url: updateUserAvatar,
+					data:{'userId': web.getItem('userId'),'userAvatar': pic },
+					success: function(){
+						pzToast('修改头像成功！',true);
+						web.setItem({'userHead' : pic});
+						app.VW('user-center.html').evalJS('forEvalJS.updateUserPro()');
+					}
+				})
+			}
+		})();
+	</script>
+</html>

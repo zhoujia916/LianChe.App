@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<meta name="apple-mobile-web-web-capable" content="yes">
+		<meta name="apple-mobile-web-web-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/common.css" />
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<style>
+.item-show{display:none;position:fixed;width:100%;height:30px;top:0;left:0;text-align:center;line-height:30px;background:white;z-index: 100;border-bottom:1px solid #dedede;font-size:12.5px!important;color:#626262}
+.del{display:none;position:fixed;width:20px;height:20px;right:5px;top:5px;background-image:url("img/del_pop.png");background-size:cover;;border-radius:50%;z-index:100}
+.mui-table-view{-webkit-transition:margin-top 0.3s;transition:margin-top 0.3s}
+.mui-pull-top-pocket { top: 15px;}
+		</style> 
+	</head>
+	<body>
+		<div id="refreshContainer" class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<ul class="mui-table-view">
+				</ul>
+			</div>
+			<div class='item-show'></div>
+			<span class="del" data-type='3'></span>
+		</div>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/common.js" ></script>
+	<script type="text/javascript" src="js/append-html.js" ></script>
+	<script type="text/javascript" charset="UTF-8">
+		mui.init({
+			pullRefresh: {
+				container: "#refreshContainer",
+				deceleration:0.0006,
+				up: {
+					contentrefresh: "正在加载...",
+					contentnomore: '没有更多数据了',
+					callback: upToLoad
+				},
+				down:{
+      				auto:true,
+					contentdown : "下拉可以刷新",
+					contentover : "释放立即刷新",
+					contentrefresh : "正在刷新...", 
+					callback : downToRefresh
+				}
+			},
+			keyEventBind: {
+				backbutton: false,
+				menubutton: false
+			}
+		});
+		
+		var isFirstIn=true,//第一次进入
+			fromOtherPage=false,
+			brandRequest={//排序条件，及是否变换请求
+				brandId:0,
+				firstRequest:false
+			},
+			sortRequest={//排序条件，及是否变换请求
+				sort:0,
+				firstRequest:false
+			},
+			restoreSort=false;//还原默认排序
+			
+		/*列表点击事件*/
+		var handlerList={
+			'li': function() {
+				if(!web.getItem('isAuth')){
+					return pzToast('请先实名认证，再购买车辆！');
+				}
+				app.VW('car-details.html').show(aniShow, 250);
+				var param={};
+				if(web.getItem('userId')){
+					param.viewUserId=web.getItem('userId');
+				}
+				param.carId=this.dataset.carid;
+				app.VW('car-details.html').evalJS('forEvalJS.getCarDetails('+JSON.stringify(param)+')');		
+			}
+		}
+		
+		/*下拉刷新*/
+		function downToRefresh(w){
+			var param={"carType": 1,"markId": 1};
+			var list=web.qs('.mui-table-view').children;
+			if(list.length!=0&&!fromOtherPage){
+				param.carId=list[0].dataset.carid
+			}
+			createSortRequestParam(param);
+			post({
+				url: carlistSver,
+				data: param,
+				success: function(data){
+					if(data.data){
+						refreshForSort(true)
+						if(w){
+							web.qs('.mui-table-view').innerHTML=''
+							fromOtherPage=false
+							w.close();
+						}
+						appendHtml({ 
+							data: data.data,
+							parent: web.qs('.mui-table-view'),
+							type: 'carList',
+							upToLoad: false
+						},handlerList);
+						mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+					}else{
+						refreshForSort(false)
+						if(w){
+							w.close();
+						}
+						mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+					}
+				}
+			});
+		}
+		
+		/*上拉加载*/
+		function upToLoad() {
+			var param={"carType": 1,"markId": 2};
+			var list=web.qs('.mui-table-view').children;
+			if(list.length!=0){
+				param.carId=list[list.length-1].dataset.carid
+			}
+			createSortRequestParam(param);
+			post({
+				url: carlistSver,
+				data: param,
+				success: function(data){
+					if(data.data){
+						refreshForSort(true)
+						appendHtml({ 
+							data: data.data,
+							parent: web.qs('.mui-table-view'),
+							type: 'carList',
+							upToLoad: true
+						},handlerList); 
+						mui('#refreshContainer').pullRefresh().refresh(true);
+						mui('#refreshContainer').pullRefresh().endPullupToRefresh(false);
+					}else{
+						refreshForSort(false)
+						mui('#refreshContainer').pullRefresh().endPullupToRefresh(true);
+					}
+				}
+			});
+		}
+		/*生成排序请求参数*/
+		function createSortRequestParam(param){
+			if(sortRequest.firstRequest||brandRequest.firstRequest){
+				param.carId=0
+			}
+			if(brandRequest.brandId){
+				param.brandId=brandRequest.brandId
+			}
+			if(sortRequest.sort){
+				param.sort=sortRequest.sort
+			}
+			if(restoreSort){
+				param.carId=0
+			}
+		}
+		
+		/*变化请求条件后，清空内容及条件搜索后无内容*/
+		function refreshForSort(haveMsg){
+			if(haveMsg){
+				if(sortRequest.firstRequest||brandRequest.firstRequest||restoreSort){
+					mui('.mui-table-view').off();
+					web.qs('.mui-table-view').innerHTML='';
+					sortRequest.firstRequest=false;
+					brandRequest.firstRequest=false;
+					restoreSort=false;
+				}
+			}else{
+				if(sortRequest.firstRequest||brandRequest.firstRequest){
+					pzToast('没有这个你选择的品牌哦!');
+					sortRequest.firstRequest=false;
+					brandRequest.firstRequest=false;
+				}
+			}
+		}
+		
+		/*还原默认排序*/
+		mui('body').on('tap', '.del', function(){
+			web.qs('.item-show').innerText='';
+			forEvalJS.sortRequest(this.dataset.type);
+		});
+		
+		var forEvalJS={
+			firstGet: function(){
+				fromOtherPage=true;
+				downToRefresh(app.waiting());
+			},
+			/*时间，信誉排序*/
+			sortRequest:function(r){
+				if(r!=3){
+					if(sortRequest.sort==0){
+						sortRequest.sort=r;
+						sortRequest.firstRequest=true;
+						upToLoad()
+					}else{
+						if(sortRequest.sort!=r){
+							sortRequest.sort=r;
+							sortRequest.firstRequest=true;
+							upToLoad()
+						}
+					}
+				}else{//还原默认排序
+					this.hiddenSortItemsBox();
+					brandRequest={
+						brandId:0,
+						firstRequest:false
+					},
+					sortRequest={
+						sort:0,
+						firstRequest:false
+					};
+					restoreSort=true;
+					upToLoad()
+				}
+			},
+			/*品牌排序*/
+			brandRequest:function(r){
+				if(brandRequest.brandId==0){
+					brandRequest.brandId=r;
+					brandRequest.firstRequest=true;
+					upToLoad()
+				}else{
+					if(brandRequest.brandId!=r){
+						brandRequest.brandId=r;
+						brandRequest.firstRequest=true;
+						upToLoad()
+					}
+				}
+			},
+			/*条件盒子隐藏*/
+			hiddenSortItemsBox:function(){
+				web.qs('.mui-table-view').style.marginTop='0';
+				web.qs('.item-show').style.display='none';
+				web.qs('.del').style.display='none';
+				web.qs('.item-show').innerText='';
+			},
+			/*条件盒子显示*/
+			showSortItemsBox:function(){
+				web.qs('.mui-table-view').style.marginTop='30px';
+				web.qs('.item-show').style.display='block';
+				web.qs('.del').style.display='block';
+			},
+			/*条件盒子显示排序条件*/
+			showSortItems:function(text){
+				this.showSortItemsBox();
+				var str='';
+				if(web.qs('.item-show').innerText!=''){
+					str=web.qs('.item-show').innerText;
+				}
+				if(/(时间排序|信用排序)/g.test(text)){// 时间 信用
+					str=str.replace(/(时间排序|信用排序)/g,'');
+					str+=' '+text;
+					web.qs('.item-show').innerText=str;
+				}else{//品牌
+					var temp='';
+					if(/时间排序/g.test(str)){
+						 temp='时间排序';
+					}
+					if(/信用排序/g.test(str)){
+						temp='信用排序';
+					}
+					web.qs('.item-show').innerText=text+' '+temp;
+				}
+			}
+		}
+		
+	</script>
+
+</html>

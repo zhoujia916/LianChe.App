@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" href="css/common.css" />
+		<style>
+			body,html{background: #fff;}.content{margin: 115px 0;}.content>div:last-child{margin-top: 20px;}.pz-icon-l span{display:inline-block;height:20px;width:20px;margin-left:15px;margin-top:12px;background-size:cover;background-image:url(img/back_icon.png)}
+		</style>
+	</head>
+		
+	<body>
+		<header class="pz-header">
+			<div class='pz-icon-l mui-action-back'><span></span></div>
+			<div id='title' class="pz-title">设置</div>
+		</header> 
+		<div class='content'>
+			<div id='out-login' class='pz-btn pz-btn-width'>退出登录</div>
+			<div id='clear' class='pz-btn pz-btn-width'>清理缓存</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="js/mui.min.js" ></script>
+	<script type="text/javascript" src="js/common.js" ></script>
+	<script>
+		mui.init();
+		web.qs('#out-login').addEventListener('tap',function(){
+			localStorage.clear();
+			app.VW('user-center.html').evalJS('forEvalJS.logout();forEvalJS.login()');//切换至登录
+			setTimeout(function(){
+				mui.back();
+			},50);
+		},false);
+		web.qs('#clear').addEventListener('tap',function(){
+			pzToast('正在清楚缓存');
+			setTimeout(function(){
+				web.removeItem('');
+				pzToast('已经清楚全部缓存!',true);
+			},2000);
+		},false);
+	</script>
+</html>

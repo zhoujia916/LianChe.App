@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" href="css/common.css" />
+		<style>
+			html,body {background-color:#FFFFFF!important}
+			.content {width: 89%;margin: 0 auto;overflow: hidden;}
+			.content>div:last-child {margin-top: 36px;}
+			.content>div>div{position: relative;}
+			.pz-pic-box{float: left;margin-bottom: 5px;margin-left: 5px;background-image: url(img/pic_bg_03.jpg);}
+			.d3 {margin-top: 13px;margin-bottom: 7px;}
+		</style>
+	</head>
+	
+	<body>
+		<header class="pz-header">
+			<div class='pz-icon-l mui-action-back'><span></span></div>
+			<div id='title' class="pz-title">实名认证</div>
+		</header>
+		<div class="pz-content">
+			<div class="content">
+				<div style='margin-bottom:10px;margin-top:18px;'><input type='text' class='pz-input-txt forsubmit' name='idNumber' placeholder="身份证号：" /></div>
+				<div>
+					<div>
+						<h3>认证资料：（至少两种）</h3></div>
+					<div>
+						<h3>1、身份证正、反面或驾驶证其中一者（必传）</h3></div>
+					<div>
+						<h3>2、工商营业执照或税务登记证（必传）</h3></div>
+					<div>
+						<h3>3、实拍照片</h3></div>
+				</div>
+				<div class='d3'>
+					<div>
+						<h3>上传图片</h3></div>
+				</div>
+				<div id='pic-content' class='clearfix'>
+					<div class='pz-pic-box'>
+					</div>
+				</div>
+				<div><div class='pz-btn pz-btn-width'>提交审核</div></div>
+			</div>
+		</div>
+	</body>
+		<script src="js/mui.min.js"></script>
+		<script type="text/javascript" src="js/common.js" ></script>
+		<script>
+			mui.init();
+				
+			var picUrl='';
+			(function(){
+				web.qs('.pz-pic-box').addEventListener('tap',sendPic,false)
+				
+				function createNew(){//创建新的初始化
+					var len=web.qsa('#pic-content div').length;
+					if(web.qsa('#pic-content div')[len-1].hadLoad){
+						var oD=web.createDom("<div class='pz-pic-box'></div>")
+						web.qs('#pic-content').appendChild(oD);
+						oD.addEventListener('tap',sendPic,false);
+					}
+				}
+				
+				function sendPic(){
+					var _this=this;
+					upPicFromGallery.options={
+						server: upPic,//服务器地址：图片文件->服务器 
+						showBox: _this,//图片预览容器
+						fileKey: 'upfile',//api 图片键名
+						type: "auth",//api 图片干啥用的
+						uploadSuccess: uploadSuccess //上传成功回调 
+					}
+					upPicFromGallery.appendByGallery();
+					this.hadLoad=true;
+				}
+				
+				function uploadSuccess(pic){
+					picUrl+=pic+'※';
+					createNew();
+				}
+			})();
+			
+			web.qs('.pz-btn').addEventListener('tap',function(){
+				var param=web.getSubmitParam('.forsubmit');
+				if(!web.validId(param.idNumber)){
+					return pzToast('身份证信息错误！');
+				}
+				param.pic=picUrl.replace(/※$/g,'');
+				if(param.pic==''){
+					return pzToast('请上传图片！');
+				}
+				param.userId=web.getItem('userId');
+				post({
+					url:configidSver,
+					data: param,
+					success:function(data){
+						plus.nativeUI.toast("成功提交审核！",{duration:"long"});
+						setTimeout(mui.back,50);						
+					},
+					waiting: true
+				})
+			},false);
+		</script>
+</html>

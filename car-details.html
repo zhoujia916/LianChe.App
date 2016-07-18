@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" href="css/common.css" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<style>
+.mui-indicator {background: #fff!important;box-shadow: none!important;-webkit-box-shadow: none!important;}
+.mui-slider-indicator .mui-active {background-color: RGB(163, 163, 163)!important;}
+.pz-icon-l span {background-image: url(img/back_icon.png);background-size: cover;}
+.pz-icon-r span {background-image: url(img/dots.png);background-size: cover;}
+.mui-scroll-wrapper {margin-top: 44px;}
+.owner-info {margin-top: 10px;padding: 10px;background: #fff;}
+.owner-info>div {float: left;line-height: 15px;}
+.credit {display: inline-block;height: 12px;padding: 0 5px;background: #ed5564;font-size: 9px;line-height: 12px;border-radius: 6px;text-align: center;color: #fff;margin-top: 3px;}
+.favsed,.favs {float: right;padding-left: 11px;}
+.favsed:before,.favs:before {position: absolute;content: ' ';width: 11px;height: 11px;top: 4px;left: -5px;display: inline-block;background-size: cover;}
+.favsed:before {background-image: url(img/favsed.jpg);}
+.favs:before {background-image: url(img/favs.jpg);}
+.per-photo {width: 52px;height: 52px;margin-right: 8px;background-image:url(img/member_photo.png);background-size: 100% 100%; background-position: center center;border-radius:50%;}
+.car-price {padding: 8px 10px 12px;background: #fff;}
+.car-price h4 {float: right;}
+.car-info {margin-top: 10px;}
+.id:after,.ided:after{top:1px;}
+.car-info .mui-table-view-cell h3:last-child {float: right;}
+.pz-btn {margin-top: 20px;margin-bottom: 30px;}
+.pz-select {opacity:0;transition:opacity .3s;-webkit-transition:opacity .3s;background: #fff;position: relative;border-radius: 3px;padding: 10px;}
+.pz-select>div:last-child {width: 20px;height: 20px;position: absolute;right: 10px;top: 10px;background-size: cover;background-image: url(img/del_pop.png);}
+.pz-select .pz-btn {width: 31%;height: 28px;line-height: 28px;margin: 20px auto 10px;}
+.pz-select>div:first-child {margin-bottom: 36px;}
+.outer-colors,.inner-colors {position: relative;padding-left: 50px;}
+.outer-colors>div:last-child>div,.inner-colors>div:last-child>div {float:left;border-radius:3px;box-sizing:border-box;border:1px solid #dddddd;padding: 4px 6px;margin: 0 0 10px 10px;}
+.outer-colors>div:first-child,.inner-colors>div:first-child {position: absolute;left: 0;top: 4px;}
+.pz-select-active {background: #7ecef4;border:none!important;padding: 5px 7px!important}
+.pz-select-active>* {color: #fff;}
+.car-info-menu {position: fixed;width: 100%;background: #fff;z-index: 999;bottom: 0;}
+.car-info-menu>div:first-child {border-bottom: 1px solid #f5f5f5;}
+.car-info-menu>div:first-child>div {height: 62px;width: 28%;float: left;}
+.car-info-menu>div:first-child>div img {max-height: 100%!important;}
+.focus-on {margin-left: 8%;}
+.report {margin-right: 8%;}
+.cancel {display: block;height: 41px;line-height: 41px;width: 100px;text-align: center;margin: 0 auto;}
+.car-info-menu,.pz-select{position: absolute;width:100%;bottom: 0;}
+.pz-ul .pz-multi-line>*:last-child:after{opacity:0;}
+h5 {color: #ff0000;}
+.slider-box,.mui-slider,.mui-slider-group,.mui-slider-item{height:0;padding-bottom:60%;background-size:100% 100%;background-color:#f3f3f3!important ;}
+		</style> 
+	</head>
+
+	<body>
+		<header class="pz-header">
+			<div class='pz-icon-l mui-action-back'><span></span></div>
+			<div class='pz-icon-r'><span></span></div>
+			<div id='title' class="pz-title">车源详情</div>
+		</header>
+		<div class="pz-content">
+			<div class="slider-box clearModifiy">
+			</div>
+			<div class='car-price'>
+				<div>
+					<h2 class='b modifiy clearModifiy' id='carName' style='width:70%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;'></h2><!---->
+					<h4 class='favs' id='collectId'>收藏</h4>
+				</div>
+				<div>
+					<h2 id='officalPrice' class='modifiy clearModifiy' data-before='官方价：' data-after='万元' data-unit='10000'></h2><!---->
+					<h4 id='totalNumber' class='modifiy clearModifiy' data-before='总数量：' data-unit='1'></h4><!---->
+				</div>
+			</div>
+			<span class="pz-fence"></span>
+			<div>
+				<ul class="pz-ul" id='select-color'>
+					<li class="nav">
+						<h2 class='b'>外观/内饰 颜色</h2>
+						<h3 id='select-result' class='clearModifiy'>未选择</h3>
+					</li>
+				</ul>
+			</div>
+			<div class='owner-info clearfix'>
+				<div class='per-photo' id='userAvatar'></div>
+				<div>
+					<div>
+						<h2 class='b ided clearModifiy' id='userName'></h2>
+					</div>
+					<div>
+						<h3 class='clearModifiy' id='shopName'></h3>
+					</div>
+					<div><span class='credit clearModifiy' id='point'></span></div>
+				</div>
+			</div>
+			<div class='car-info'> 
+				<ul class="pz-ul">
+					<li class='pz-deep-border'>
+						<h2 class='b'>车辆基本信息</h2>
+					</li>
+					<li>
+						<h3>加配信息</h3>
+						<h3 id='hasParts' class='clearModifiy'></h3>
+					</li>
+					<li class='flex flex-pack-justify flex-align-center' style='height:auto;display:none'>
+						<h3>加配描述</h3>  
+						<h4 id='parts' class='modifiy clearModifiy' style='width:70%;height:auto'></h4>
+					</li>
+					<li style='display:none'>
+						<h3>加配金额</h3>
+						<h4 id='partsPrice' class='modifiy clearModifiy' data-after='元' data-unit='1'>填写金额</h4>
+					</li>
+					<li>
+						<h3>品牌</h3>
+						<h3 id='brandName' class='modifiy clearModifiy'></h3><!---->
+					</li>
+					<li>
+						<h3>型号</h3>
+						<h3 id='catName' class='modifiy clearModifiy'></h3><!---->
+					</li>
+					<li class='pz-multi-line'>
+						<h3>备注信息</h3>
+						<h3 class='modifiy  clearModifiy' id='remark'></h3> <!---->
+					</li>
+					<li>
+						<h3>仓库地址</h3>
+						<h3 class='clearModifiy' id='place'></h3>
+					</li>
+					<li>
+						<h3>发票类型</h3>
+						<h3 class='clearModifiy' id='invoiceType'></h3>
+					</li>
+				</ul>
+				<div class='pz-btn pz-btn-width'>立即订购</div>
+			</div>
+		</div>
+		
+		
+		<div class='car-info-menu' style='display:none;'>
+			<div class='clearfix'>
+				<div class='focus-on'><img src='img/menu (1).jpg' alt='' /></div>
+				<div class='share'><img src='img/menu (2).jpg' alt='' /></div>
+				<div class='report'><img src='img/menu (3).jpg' alt='' /></div>
+			</div>
+			<div>
+				<h2 class='cancel close-pop'>取消</h2>
+			</div>
+		</div>
+		
+		<div class='pz-select' style='display:none;'>
+				<div>
+					<h5 class='b' id='price'></h5>
+					<h3>库存数量：<span id='carNumb' class='clearModifiy'></span>台</h3>
+				</div>
+				<div class='outer-colors clearfix'>
+					<div>
+						<h3>外观颜色</h3>
+					</div>
+					<div class='clearfix' id='outercolor'>
+					</div>
+				</div>
+				<div class='inner-colors clearfix'>
+					<div>
+						<h3>内饰颜色</h3></div>
+					<div class='clearfix' id='innercolor'>
+					</div>
+				</div>
+				<div>
+					<h3>数量</h3>
+				</div>
+				<div class="pz-numbox">
+					<button class="pz-numbox-btn-minus" type="button">-</button>
+					<input class="pz-numbox-input" type="number" value='1'/>
+					<button class="pz-numbox-btn-plus" type="button">+</button>
+				</div>
+				<div class='pz-btn' id='submit-color'> 确认 </div>
+				<div class='close-pop'></div>
+			</div>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/common.js"></script>
+	<script type="text/javascript" src="js/template.js"></script>
+	<script type="text/javascript" src="js/select-color.js" ></script>
+	<script>
+		mui.init({
+			keyEventBind: {
+				menubutton: false
+			}
+		});
+				
+		(function pzNumbox(m,p,i) {
+			var oInput=web.qs(i);
+			web.qs(m).addEventListener('touchend', function() {
+				if(parseInt(oInput.value)>1){
+					oInput.value=parseInt(oInput.value)-1;
+				}
+				defaultValue()
+			}, false);
+			web.qs(p).addEventListener('touchend', function() {
+				oInput.value=parseInt(oInput.value)+1;
+				if(parseInt(oInput.value)>parseInt(web.qs('#carNumb').innerText)){
+					oInput.value=web.qs('#carNumb').innerText;
+				}
+				defaultValue()
+			}, false);
+			oInput.addEventListener('input',function(){
+				if(parseInt(this.value)<=1)
+					this.value=1;
+				if(parseInt(this.value)>parseInt(web.qs('#carNumb').innerText)){
+					this.value=web.qs('#carNumb').innerText;
+				}
+				defaultValue()
+			},false)
+			
+			function defaultValue(){
+				if(web.qs('#carNumb').innerText==''){
+					oInput.value=1;
+				}
+			}
+		})('.pz-numbox-btn-minus' , '.pz-numbox-btn-plus', '.pz-numbox-input');
+		
+		
+		
+		mui.plusReady(function() {
+			app.hiddenIndicator();
+			app.self().addEventListener('hide',clearModifiy,false);
+			//shareModule.updateSerivces();//初始或分享模块
+		});
+		
+		var oMask = new Mask();//遮罩
+		var data=null;//车辆详情
+		var orderDetails={};//订单详情
+		var userOperateFavs='';
+		var isMyCar=false;
+		/*弹出选择颜色框*/
+		web.qs('#select-color').addEventListener('tap', function() {
+			if(data==null) return;
+			oMask.create().append(selectColor(data.officalPrice,data.attrs));
+		}, false);
+		/*弹出右上角菜单*/
+		web.qs('.pz-icon-r').addEventListener('tap', function() {
+			if(data==null) return;
+			oMask.create().append(web.qs('.car-info-menu'));
+		}, false);
+		/*pop菜单的右上角小叉叉*/
+		mui('.car-info-menu,.pz-select').on('touchend','.close-pop',function(){
+			oMask.clear();
+		});
+		/*右上角菜单*/
+		mui('.car-info-menu .clearfix>div').each(function(idx){
+			(idx==1)&&(this.addEventListener('touchend',function(){//分享
+				/*shareModule.options={
+					href:'http://www.baidu.com',
+					title:'在这里！这辆车只要'+web.qs('#officalPrice').innerText+'哦！',
+					content:'点击链接，下载这个app吧！',
+					pictures:['img/tmh_03.jpg'],
+					thumbs:['img/tmh_03.jpg']
+				}
+				shareModule.shareShow(oMask);*/
+			},false));
+			(idx==0)&&(this.addEventListener('touchend',function(){
+				if(web.qs('#collectId').className=='favsed') return;
+				oMask.append(isAddFave);
+			},false));
+			(idx==2)&&(this.addEventListener('touchend',function(){
+				app.openVW('user-report.html')
+				oMask.clear()
+			},false));
+		});
+		//带遮罩的弹出框
+		var isAddFave=pzConfirm('确定收藏此车？', oMask, function(r){
+			if(r){
+				post({
+					url: addCollect,
+					data:{
+						targetId: data.carId,
+						userId: web.getItem('userId')
+					},
+					success: function(){
+						pzToast('收藏成功!',true);
+						web.qs('#collectId').className='favsed';
+						userOperateFavs=orderDetails.carId;
+					}
+				})
+			}
+		})
+		
+		function addFavs(){
+			if(data==null) return;
+			if(web.qs('#collectId').className=='favsed') return;
+			if(!web.getItem('userId')) return;
+			oMask.create().append(isAddFave);
+		}
+		/*添加收藏*/
+		web.qs('#collectId').addEventListener('tap',addFavs,false);
+		/*提交订单*/
+		web.qs('.pz-btn.pz-btn-width').addEventListener('tap', function() {
+			if(isMyCar) return;
+			if(data==null) return;//未请求成功不得操作
+			if(!web.getItem('userId')){
+				return pzToast('请登录！');
+			} 
+			if(!orderDetails.hasSelected){
+				return oMask.create().append(selectColor(data.officalPrice,data.attrs));
+			} 
+			mui.openWindow({
+				url: 'order-submit.html',
+				id: 'order-submit.html',
+				show:{
+					autoShow:true,
+					aniShow: aniShow,
+					duration:250
+				},
+				waiting:{
+					autoShow: false
+				}
+			});
+			app.VW('order-submit.html').addEventListener('loaded',function(){
+				mui.fire(app.VW('order-submit.html'), 'getOrder', orderDetails);
+			})
+		}, false);
+		/*选颜色*/
+		web.qs('#submit-color').addEventListener('touchend',function(){
+			var txt='',count=0;
+			mui('.pz-select #innercolor div,.pz-select #outercolor div').each(function(){
+				if(this.className=='pz-select-active'){
+					if(count==0){
+						orderDetails.outsideColor=this.innerText
+					}else{
+						orderDetails.insideColor=this.innerText
+					}
+					txt+=this.innerText+'/';
+					count++;
+				}
+			});
+			if(parseInt(web.qs('.pz-select .pz-numbox-input').value)>=1&&count==2){
+				txt+=web.qs('.pz-select .pz-numbox-input').value+'辆';
+				if(parseInt(web.qs('.pz-select .pz-numbox-input').value)>parseInt(web.qs('#carNumb').innerText)){
+					 return pzToast('您预定的数量超过了库存！',false);
+				}
+				web.qs('#select-result').innerText=txt;
+				orderDetails.hasSelected=true;
+				oMask.clear();
+			}else{
+				pzToast('请把信息填写正确完整！',false);
+			}
+		},false);
+		/*创建轮播*/
+		function createSlider(pics){
+			var html1='<div class="mui-slider-group">',html2='<div class="mui-slider-indicator">';
+			for(var i=0; i<pics.length; i++){
+				html1+='<div class="mui-slider-item" style="background-image:url('+pics[i]+')"></div>';
+				if(i==0){
+					html2+='<div class="mui-indicator mui-active"></div>'
+				}else{
+					html2+='<div class="mui-indicator"></div>'
+				}
+			}
+			html1+='</div>';html2+='</div>';
+			web.qs('.slider-box').innerHTML='<div class="mui-slider">'+html1+html2+'</div>';
+			mui('.mui-slider').slider();
+		}
+		/*进入动态添加数据*/
+		function modifiy(data){
+			mui('.modifiy').each(function(){ 
+				var flag=true;
+				if(data[this.id]==undefined){
+					data[this.id]='';
+				}
+				if(this.dataset.unit){
+					this.innerText=parseInt(data[this.id])/parseInt(this.dataset.unit);
+					flag=false;
+				}
+				if(this.dataset.before){
+					this.innerText=this.dataset.before+this.innerText
+					flag=false;
+				}
+				if(this.dataset.after){
+					this.innerText=this.innerText+this.dataset.after
+					flag=false;
+				}
+				if(flag){
+					this.innerText=data[this.id]
+				}
+			});
+			if(data.collectId>0){
+				web.qs('#collectId').classList.add('favsed');
+				web.qs('#collectId').classList.remove('favs');
+			}
+			if(data.user.userAvatar)
+				web.qs('#userAvatar').style.background='url('+data.user.userAvatar+')';
+			if(data.user.userName)
+				web.qs('#userName').innerText=data.user.userName;
+			if(data.user.shopName)
+				web.qs('#shopName').innerText=data.user.shopName;
+			if(data.user.point)
+				web.qs('#point').innerText='信誉'+data.user.point;
+			if(data.user.isAuth){
+				web.qs('#userName').classList.add('ided');
+			}else{
+				web.qs('#userName').classList.add('id');
+			}
+			if(data.user.userId==web.getItem('userId')){
+				isMyCar=true;
+				web.qs('.pz-btn.pz-btn-width').style.backgroundColor='RGB(160,160,168)';
+			}
+			if(data.hasParts==2){
+				web.qs('#hasParts').innerText='有';
+				web.qs('#parts').parentNode.style.display='block';
+				web.qs('#partsPrice').parentNode.style.display='block';
+			}else{
+				web.qs('#hasParts').innerText='无';
+			}
+			if(data.invoiceType==1){
+				web.qs('#invoiceType').innerText='普通发票'
+			}else{
+				web.qs('#invoiceType').innerText='增值税发票'
+			}
+			if(data.provinceName){
+				web.qs('#place').innerText=data.provinceName+' '+data.cityName;
+			}
+			
+		}
+		/*返回动态删除数据*/
+		function clearModifiy(){
+			mui('.mui-slider').off();
+			mui('.clearModifiy').each(function(){ 
+				this.innerHTML='';
+			});
+			web.qs('#collectId').classList.remove('favsed');
+			web.qs('#collectId').classList.add('favs');
+			web.qs('#userAvatar').style.background='url(img/member_photo.png)';
+			web.qs('#point').innerText='信誉';
+			web.qs('#userName').classList.remove('ided');
+			web.qs('#userName').classList.remove('id');
+			web.qs('#hasParts').innerText='';
+			web.qs('#parts').parentNode.style.display='none';
+			web.qs('#partsPrice').parentNode.style.display='none';
+			data=null;orderDetails={},userOperateFavs='';isMyCar=false;
+			web.qs('.pz-btn.pz-btn-width').style.backgroundColor='RGB(126, 206, 244)';
+		}
+		
+		
+		var forEvalJS={
+			getCarDetails: function(param){
+				post({
+					url: autocarShow,
+					data: param,
+					success:function(result){ 
+						createSlider(result.data.pics);
+						modifiy(result.data);
+						data=result.data;
+						mui.extend(orderDetails,data);
+						delete orderDetails.pics
+						delete orderDetails.attrs
+						delete orderDetails.user
+					},
+					waiting: true
+				})
+			}
+		};
+		
+		var oldback=mui.back;
+		mui.back = function() {
+			setTimeout(function(){
+				window.scrollTo(0, 0);
+				if(userOperateFavs!=''){
+					app.VW('car-special-selling-list.html').evalJS('forEvalJS.updateFavsCount('+userOperateFavs+')');
+				}
+				clearModifiy();
+			},250);
+			oldback();
+		}
+	</script>
+
+</html>

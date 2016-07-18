@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" href="css/common.css" />
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<style>
+body,html{background:#fff!important}
+.register{margin:10px 16.6%}
+.d1 input{background: transparent}
+.d2 input{font-size:12.5px;border:0;outline:0;display:block;width:100%!important;height:43px;background:#f3f3f3!important}
+.d2{margin-top:11px;position:relative}
+.d3{margin-top:36px}
+::-webkit-input-placeholder{text-align:center;font-size:12.5px}
+.yzm{height:auto;position:absolute;right:0;top:0;line-height:21px;color:RGB(126, 206, 244);padding:10px 6px 10px;background:transparent}
+.mui-checkbox input[type=checkbox]:checked:before {color: #7ecef4;} 
+		</style>
+	</head>
+	<body>
+		<header class="pz-header">
+			<div class='mui-action-back pz-icon-l'><span></span></div>
+			<div id='title' class="pz-title">注册账号</div>
+		</header> 
+		<div class="pz-content">
+			<div class='register'>
+				<div class='d1' style='visibility:hidden'>
+					<div class="clearfix">
+						<h3>同意协议</h3>
+						<div class='mui-checkbox pz-left'>
+							<input name="checkbox" id='agree' type="checkbox" checked>
+						</div>
+					</div>
+				</div>
+				<div class='d2'><input type="number" class='forsubmit' name='userName' placeholder="手机号码" /></div>
+				<div class='d2'><input type="password" class='forsubmit' name='password' placeholder="输入密码" /></div>
+				<div class='d2'>
+					<input type="number" name='code' class='forsubmit' id='yzm' placeholder="验  证  码" />
+					<h2 class="yzm">获取验证码</h2>
+				</div>
+				<div class='d3'>
+					<div id='register' class='pz-btn'>注册</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/common.js" ></script>
+	<script type="text/javascript" charset="UTF-8">
+		mui.init();
+		var yzm='',time=0,notAllow=false;
+		web.qs('#register').addEventListener('tap',function(){
+			if(!web.qs('#agree').checked){
+				pzToast('请同意协议！');return;
+			}
+			var param=web.getSubmitParam('.forsubmit');
+			if(!web.validMobile(web.gn('userName').value)){
+				pzToast('手机号不正确！');return;
+			}
+			if(param.password&&param.password.length<6){
+				pzToast('密码不能小于6位！');return;
+			}
+			/*if(web.qs('#yzm').value!=yzm){
+				pzToast('验证码错误！');return;
+			}*/
+			post({
+				url: registerSver,
+				data: param,
+				success:function(data){
+					web.setItem({
+						'userId':data.data
+					});
+					app.VW('user-center.html').evalJS('forEvalJS.memberCenter()'); 
+					app.VW(plus.runtime.appid).evalJS('changeTab("0")');
+					setTimeout(mui.back,50);
+					plus.nativeUI.toast("注册成功，已自动登录！",{duration:"long"});
+				},
+				waiting: true
+			});
+		},false);
+		web.qs('.yzm').addEventListener('tap',function(){
+			if(!web.validMobile(web.gn('userName').value)){
+				pzToast('手机号不正确！'); return;
+			}
+			if(notAllow){
+				pzToast('不能频繁获取验证码！'); return;
+			}
+			countTime();
+			var param={};
+			param.keyword='register';
+			param.phone=web.gn('userName').value;
+			post({
+				url: sendCode,
+				data: param,
+				success: function(data){
+					yzm=data.data;
+				}
+			});
+		},false);
+		function countTime(){
+			notAllow=true;
+			var i=60,o=web.qs('.yzm');
+			var timer=setInterval(function(){
+				o.innerText=(--i)+'秒';
+				if(i==0){
+					clearInterval(timer);
+					o.innerText='获取验证码';
+					notAllow=false;
+				}
+			},1000);
+			o.innerText='60秒';
+		}
+	</script>
+
+</html>
