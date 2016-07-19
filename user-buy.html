@@ -274,7 +274,7 @@ body,html{height:100%;width: 100%;overflow: ;}
 						if(item=='payment'){
 							html+='<div class="pz-btn payment">支付订单</div>';flag=true;
 						}else if(item=='contact_seller'){
-							html+='<div class="pz-btn contact-seller" data-tel="tel:'+j.sellerPhone+'">联系卖家</div>';flag=true;
+							html+='<div class="pz-btn contact-seller" data-tel="'+j.sellerPhone+'">联系卖家</div>';flag=true;
 						}else if(item=='receive'){
 							html+='<div class="pz-btn receive">确认收货</div>';flag=true;
 						}else if(item=='request_cancel'){
@@ -404,7 +404,9 @@ body,html{height:100%;width: 100%;overflow: ;}
 		/*联系卖家*/
 		mui('.mui-scroll').on('tap','.car-item .contact-seller',function(){
 			var _this=this,contianer=this.parentNode.parentNode;
-			contactSeller.querySelector('.sure').setAttribute('href',_this.dataset.tel);
+			oMask.callback=function(){
+				plus.device.dial(_this.dataset.tel);
+			}
 			oMask.create().append(contactSeller);
 		})
 		/*申请取消*/

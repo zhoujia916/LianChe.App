@@ -66,34 +66,29 @@ h2{line-height:16px}
 		});
 		
 		mui.plusReady(function(){
+			/*获取新闻*/
 			sellADS()
 		});
 		
 		/*特卖广告*/
 		function sellADS(){
-			var list=[{
-					title:'最低价转让在不动手就迟了最低价转让在不动手就迟了',
-					link:'',
-					pic:'img/tmh_03.jpg'
-				},{
-					title:'看电视放假啊上来的房间卡上的风景撒的发生都发生地方',
-					link:'',
-					pic:'img/tmh_06.jpg'
-				}];
-			/*post({
+			post({
 				url:autoarticleList,
-				data: {catId:2},
-				success: function(){
+				data: {adPositionId:2},
+				success: function(data){
+					if(data.data&&data.data.length!=0){
+						create(data.data)
+					}
 				}
-			});*/
+			});
 			function create(list){
 				var html='';
 				list.forEach(function(item,idx){
-					html+='<div data-link="'+item.link+'"><img src="'+item.pic+'"/></div>';
+					html+='<div class="a" data-href="'+item.link+'" data-type="default" data-title="特卖"><img src="'+item.pic+'"/></div>';
 				});
 				web.qs('.ads').innerHTML=html;
+				mui('.ads').on('tap','.a',hrefHander)
 			}
-			create(list)
 		}
 		
 		var isFirstIn=true,//第一次进入
@@ -182,6 +177,7 @@ h2{line-height:16px}
 				success: function(data){
 					if(data.data){
 						refreshForSort(true)
+						/*创建列表内容*/
 						appendHtml({  
 							data: data.data,
 							parent: web.qs('.special-list'),
@@ -246,6 +242,7 @@ h2{line-height:16px}
 		
 		
 		var forEvalJS={
+			/*首次请求*/
 			firstGet:function(){
 				fromOtherPage=true;
 				upToLoad(app.waiting());

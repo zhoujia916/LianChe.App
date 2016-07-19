@@ -124,10 +124,12 @@ html,body{background:#f3f3f3!important}
 			app.openVW('message-details.html')
 			var title = this.children[0].children[0].innerText;
 			var msgId=this.dataset.msgid;
-			mui.fire(app.VW('message-details.html'), 'newsId', {
-				msgId: msgId,
-				title: title
-			});
+			app.VW('message-details.html').addEventListener('loaded',function(){
+				mui.fire(app.VW('message-details.html'), 'newsId', {
+					msgId: msgId,
+					title: title
+				});
+			})
 		})
 		
 		function firstInNoMsg(){

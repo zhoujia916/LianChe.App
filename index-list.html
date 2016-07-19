@@ -38,9 +38,9 @@ header {background-image: url(img/main-h-bg.png);background-repeat-x: repeat;bac
 		<div class="mui-content">
 			<div class="slider-box">
 			</div>
-			<div class="news a flex" data-href='news.html' data-type='open' data-title='新闻'>
+			<div class="news a flex" data-type='default' data-title='新闻'>
 				<h2 class='b earth'>最新消息&nbsp;|&nbsp;</h2>
-				<h3 class="flex-1 news-loop">最低价转让在不动手就迟了最低价转让在不动手就迟了</h3>
+				<h3 class="flex-1 news-loop"></h3>
 			</div>
 			<div class='nav-box clearfix'>
 				<div>
@@ -72,98 +72,81 @@ header {background-image: url(img/main-h-bg.png);background-repeat-x: repeat;bac
 			setTimeout(function() {
 				getTemplate('default', 'template.html');
 			}, 300);
+			/*获取新闻信息*/
 			textADS()
 			loopADS()
 		});
 		/*最新消息 新闻*/
 		function textADS(){
-			var list=[{
-					title:'最低价转让在不动手就迟了最低价转让在不动手就迟了',
-					link:''
-				},{
-					title:'看电视放假啊上来的房间卡上的风景撒的发生都发生地方',
-					link:''
-				},
-				{
-					title:'发生地方久爱时空发动机啊士大夫空间我去啃饭撒打开房间啊可是老大',
-					link:''
-				}];
-			var len=list.length,count=0;
 			post({
 				url:autoarticleList,
-				data: {catId:4},
-				success: function(){
-					setAttr();
-					web.qs('.news-loop').timer=setInterval(function(){
-						web.qs('.news-loop').style.opacity=0.3;
-						setTimeout(function(){
-							count++;
-							count==len?count=0:'';
-							web.qs('.news-loop').style.opacity=1;
-							setAttr();
-						},1000)
-					},5000);
+				data: {adPositionId:4},
+				success: function(data){
+					if(data.data&&data.data.length!=0){
+						var len=data.data.length,count=0;
+						setAttr(data.data);
+						web.qs('.news-loop').timer=setInterval(function(){
+							web.qs('.news-loop').style.opacity=0.3;
+							setTimeout(function(){
+								count++;
+								count==len?count=0:'';
+								web.qs('.news-loop').style.opacity=1;
+								setAttr(data.data);
+							},1000)
+						},5000);
+						/*设置内容和跳转链接*/
+						function setAttr(data){
+							web.qs('.news-loop').innerText=data[count].title;
+							web.qs('.news').dataset.href=data[count].link;
+						}
+					}
 				}
 			});
-			function setAttr(){
-				web.qs('.news-loop').innerText=list[count].title;
-				web.qs('.news').dataset.link=list[count].link;
-			}
 		}
 		/*轮播图新闻*/
 		function loopADS(){
-			var list=[{
-					title:'最低价转让在不动手就迟了最低价转让在不动手就迟了',
-					link:'',
-					pic:'img/bg2.jpg'
-				},{
-					title:'看电视放假啊上来的房间卡上的风景撒的发生都发生地方',
-					link:'',
-					pic:'img/bg2.jpg'
-				},
-				{
-					title:'发生地方久爱时空发动机啊士大夫空间我去啃饭撒打开房间啊可是老大',
-					link:'',
-					pic:'img/bg2.jpg'
-				}];
 			post({
 				url:autoarticleList,
-				data: {catId:2},
+				data: {adPositionId:3},
 				success: function(data){
-					createSlider(list);
+					if(data.data&&data.data.length!=0){
+						createSlider(data.data);
+					}
 				}
 			});
+			/*创建轮播图*/
 			function createSlider(list){
 				var len=list.length;
 				var html1='<div class="mui-slider-group mui-slider-loop">'+
-							'<div class="mui-slider-item" data-link="'+list[len-1].link+'" style="background-image:url('+list[len-1].pic+')"></div>',
+							'<div class="mui-slider-item" data-href="'+list[len-1].link+'" data-type="default"  data-title="新闻" style="background-image:url('+list[len-1].pic+')"></div>',
 					html2='<div class="mui-slider-indicator">';
 				if(len==1){
 					html1='<div class="mui-slider-group">'+
-						'<div class="mui-slider-item" data-link="'+list[0].link+'" style="background-image:url('+list[0].pic+')"></div>'+
+						'<div class="mui-slider-item" data-href="'+list[0].link+'" data-type="default"  data-title="新闻" style="background-image:url('+list[0].pic+')"></div>'+
 					'</div>';
 					html2+='<div class="mui-indicator mui-active"></div></div>'
 				}else{
 					for(var i=0; i<len; i++){
-						html1+='<div class="mui-slider-item" data-link="'+list[i].link+'" style="background-image:url('+list[i].pic+')"></div>';
+						html1+='<div class="mui-slider-item" data-href="'+list[i].link+'" data-type="default" data-title="新闻" style="background-image:url('+list[i].pic+')"></div>';
 						if(i==0){
 							html2+='<div class="mui-indicator mui-active"></div>'
 						}else{
 							html2+='<div class="mui-indicator"></div>'
 						}
 					}
-					html1+='<div class="mui-slider-item" data-link="'+list[0].link+'" style="background-image:url('+list[0].pic+')"></div>'
+					html1+='<div class="mui-slider-item" data-href="'+list[0].link+'" data-type="default" data-title="新闻" style="background-image:url('+list[0].pic+')"></div>'
 					html1+='</div>';html2+='</div>';
 				}
 				web.qs('.slider-box').innerHTML='<div class="mui-slider">'+html1+html2+'</div>';
 				mui('.mui-slider').slider({
 					interval: 8000
 				});
-				html1=null;html2=null
+				html1=null;html2=null;
+				mui('.mui-slider-group').on('tap','.mui-slider-item',hrefHander);
 			}
 		}
 		
-		
+		/*选项卡切换至车源大厅*/
 		web.qs('#sec-nav').addEventListener('tap', function() {
 			app.VW(plus.runtime.appid).evalJS('changeTab(1)'); 
 		}, false);

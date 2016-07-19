@@ -78,13 +78,15 @@
 		
 		var oldback=mui.back;
 		mui.back=function(){
+			/*立即返回*/
 			if(immediate){
 				oldback();
+			/*不是立即返回则，让子页面执行的函数*/
 			}else{
 				if(contentWebview==null){
 					contentWebview = self.children()[0];
 				}
-				contentWebview.evalJS('_letSonDo()');//不是立即让子页面执行的函数
+				contentWebview.evalJS('_letSonDo()');//
 			}
 				
 		}

@@ -62,6 +62,7 @@ h5{font-size:12.5px!important;color:#ff0000}
 .pz-confirm .clearfix>.cancel{float:right}
 .pz-confirm>div:last-child{width:20px;height:20px;position:absolute;right:5px;top:5px;background-size:cover;background-image:url("../img/del_pop.png")}
 .pz-confirm a{display:inline-block;}
+.pz-confirm a:active{color:#FFFFFF!important;}
 .pz-ul>li,.pz--ul>li{position:relative;box-sizing:border-box;height:43px;padding:11px 10px;line-height:20px;border-bottom:1px solid #F5F5F5;background:#fff;overflow:hidden}
 .pz-ul>li>*:first-child,.pz--ul>li>*:first-child{height:100%;position:relative;float:left!important}
 .pz-ul>li>*:last-child,.pz--ul>li>*:last-child{text-align:right;height:100%;position:relative;float:right}

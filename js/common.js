@@ -609,100 +609,151 @@ var upPicFromGallery={
 			height:'384px' ,//比例压缩->宽高压缩
 			uploadSuccess: null //图片url->服务器 成功回调 */
 		},
+		selectMethod:function (){
+			var _this=this;
+			if(mui.os.plus){
+				var a = [{
+					title: "拍照"
+				}, {
+					title: "从手机相册选择"
+				}];
+				plus.nativeUI.actionSheet({
+					title: "上传图片",
+					cancel: "取消",
+					buttons: a
+				}, function(b) {
+					switch (b.index) {
+						case 0:
+							break;
+						case 1:
+							_this.appendByCamera();
+							break;
+						case 2:
+							_this.appendByGallery();
+							break;
+						default:
+							break
+					}
+				})	
+			}
+		},
+		// 从相机添加文件 
+		appendByCamera:function(){
+			var _this=this;
+			var c = plus.camera.getCamera();
+			c.captureImage(function(e) {
+				plus.io.resolveLocalFileSystemURL(e, function(entry) {
+					var s = entry.toLocalURL();
+					_this.readSucceed(s);
+					//console.log(s);
+				}, function(e) {
+					//console.log("读取拍照文件错误：" + e.message);
+				});
+			}, function(s) {
+				//console.log("error" + s);
+			}, {
+				filename: "_doc/temp.jpg"
+			})
+		},
 		// 从相册添加文件 
 		appendByGallery:function(){
 			var _this=this;
-			plus.gallery.pick(function(e) {
-				var name = e.substr(e.lastIndexOf('/') + 1);
-				var img=new Image();
-				var wt=plus.nativeUI.showWaiting();
-				img.src=e;
-				img.onload=function(){
-					console.log('width:'+img.width+"  height:"+img.height);
-					console.log(JSON.stringify(_this.clip(img.width,img.height)));
-					/*EXIF.getData(img, function(){
-					  EXIF.getAllTags(this);
-					  alert(EXIF.getTag(this, 'Orientation')) 
-					});*/
-					var options={
-						src: e,
-						dst: '_doc/' + name,
-						overwrite: true,
-						quality: 80 
-					}
-					if(_this.options.ratio){
-						options.clip=_this.clip(img.width,img.height)
-					}
-					plus.zip.compressImage(options, function(zip) {
-						if(_this.options.width&&_this.options.height){//如果指定了宽高 再压缩
-							name = zip.target.substr(zip.target.lastIndexOf('/') + 1);
-							plus.zip.compressImage({
-								src: zip.target,
-								dst: '_doc/' + name,
-								overwrite: true,
-								quality: 80,
-								width: _this.options.width,
-								height: _this.options.height,
-							},function(zip){
-								_this.options.showBox.style.backgroundImage='url('+zip.target+')';
-								wt.close()
-								_this.upload({path:zip.target});//发送
-							},function(){pzToast('压缩失败！')})
-						}else{
-							if (zip.size > (2*1024*1024)) {
-								return pzToast('文件不超过2M,请重新选择！');
-							}
-							if(Math.min(zip.width,zip.height)<360){
-								return pzToast('请上传尺寸大于600*360的图片！');
-							}
+			plus.gallery.pick(function(e){
+					_this.readSucceed(e);
+				}, function(e) {
+				mui.toast(e.message);
+			},{});
+		},
+		readSucceed:function(e) {
+			var _this=this;
+			var name = e.substr(e.lastIndexOf('/') + 1);
+			var img=new Image();
+			var wt=plus.nativeUI.showWaiting();
+			img.src=e;
+			img.onload=function(){
+				console.log('width:'+img.width+"  height:"+img.height);
+				//console.log(JSON.stringify(_this.clip(img.width,img.height)));
+				EXIF.getData(img, function(){
+				  EXIF.getAllTags(this);
+				  //alert(EXIF.getTag(this, 'Orientation')) 
+				});
+				var options={
+					src: e,
+					dst: '_doc/' + name,
+					overwrite: true,
+					quality: 80 
+				}
+				if(_this.options.ratio){
+					options.clip=_this.clip(img.width,img.height)
+				}
+				plus.zip.compressImage(options, function(zip) {
+					if(_this.options.width&&_this.options.height){//如果指定了宽高 再压缩
+						name = zip.target.substr(zip.target.lastIndexOf('/') + 1);
+						plus.zip.compressImage({
+							src: zip.target,
+							dst: '_doc/' + name,
+							overwrite: true,
+							quality: 80,
+							width: _this.options.width,
+							height: _this.options.height,
+						},function(zip){
 							_this.options.showBox.style.backgroundImage='url('+zip.target+')';
 							wt.close()
 							_this.upload({path:zip.target});//发送
+						},function(){pzToast('压缩失败！')})
+					}else{
+						if (zip.size > (2*1024*1024)) {
+							return pzToast('文件不超过2M,请重新选择！');
 						}
-					}, function(zipe) {pzToast('压缩失败！')});
-					img=null;
-				};
-			}, function(e) {
-				mui.toast(e.message);
-			},{});
-	},
-	// 上传文件
-	upload:function (file){
-		var _this=this;
-		if(!file){
-			return pzToast("没有添加上传文件！");;
-		}
-		var wt=plus.nativeUI.showWaiting();
-		var task=plus.uploader.createUpload(this.options.server,
-			{method:"POST"},
-			function(t,status){ //上传完成
-				//console.log(JSON.stringify(t.responseText));
-				if(status==200){
-					wt.close();
-					_this.options.uploadSuccess&&_this.options.uploadSuccess(JSON.parse(t.responseText).data)
-					_this.options=null;
-				}else{
-					console.log("上传失败："+status);
-				}
+						if(Math.min(zip.width,zip.height)<360){
+							return pzToast('请上传尺寸大于600*360的图片！');
+						}
+						_this.options.showBox.style.backgroundImage='url('+zip.target+')';
+						wt.close()
+						_this.upload({path:zip.target});//发送
+					}
+				}, function(zipe) {pzToast('压缩失败！')});
+				img=null;
+			};
+		},
+		// 上传文件
+		upload:function (file){
+			var _this=this;
+			if(!file){
+				return pzToast("没有添加上传文件！");;
 			}
-		);
-		task.addFile(file.path,{key:_this.options.fileKey});
-		task.addData("type",_this.options.type);
-		task.start();
-	},
-	//裁剪规格
-	clip:function (w,h){
-		var tw=Math.max(w,h);
-		var th=Math.min(w,h);
-		var ratio=this.options.ratio;
-		if(th>=tw*ratio){
-			return {width: tw+'px', height: parseInt(tw*ratio)+'px', left: 0+'px' , top: parseInt((th-tw*ratio)/2)+'px'}
-		}else{
-			return {width: parseInt(th/ratio)+'px' , height: th+'px', left: parseInt((tw-th/ratio)/2)+'px' , top: 0+'px'}
+			var wt=plus.nativeUI.showWaiting();
+			var task=plus.uploader.createUpload(this.options.server,
+				{method:"POST"},
+				function(t,status){ //上传完成
+					//console.log(JSON.stringify(t.responseText));
+					if(status==200){
+						wt.close();
+						_this.options.uploadSuccess&&_this.options.uploadSuccess(JSON.parse(t.responseText).data)
+						_this.options=null;
+					}else{
+						console.log("上传失败："+status);
+					}
+				}
+			);
+			task.addFile(file.path,{key:_this.options.fileKey});
+			task.addData("type",_this.options.type);
+			task.start();
+		},
+		//裁剪规格
+		clip:function (w,h){
+			var tw=Math.max(w,h);
+			var th=Math.min(w,h);
+			var ratio=this.options.ratio;
+			console.log(th+'   '+this.options.ratio)
+			if(th>=tw*ratio){
+				return {width: tw+'px', height: parseInt(tw*ratio)+'px', left: 0+'px' , top: parseInt((th-tw*ratio)/2)+'px'}
+			}else{
+				return {width: parseInt(th/ratio)+'px' , height: th+'px', left: parseInt((tw-th/ratio)/2)+'px' , top: 0+'px'}
+			}
 		}
+		
 	}
-	
-}
 
 /* 简单的swiper*/
 function PzSlider(sel, j) {
@@ -888,18 +939,3 @@ function LogMsg(data){
 	console.log(str);
 }
 
-function dsfg(){
-	var date = new Date();
-    var month = date.getMonth();
-    var day = date.getDate();
-
-    var date1 = date.getFullYear() + "-" + (month < 9 ? ("0" + (1 + month)) : (1 + month)) + "-" + (day < 10 ? "0" + day : day);
-
-    $( "#datepicker1").val(date1);
-
-    var date2 = month < 10 ? (date.getFullYear() + "-" + ((month + 3) < 9 ? ("0" + (3 + month)) : (3 + month)) + "-" + (day < 10 ? "0" + day : day)) :
-            ((date.getFullYear() + 1) + "-" + ("0" + ((month + 3) % 12)) + "-" + (day < 10 ? "0" + day : day));
-
-    $( "#datepicker2").val(date2);
-
-}

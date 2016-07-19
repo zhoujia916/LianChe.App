@@ -173,7 +173,7 @@
 			},
 			"splashscreen": {
 				"ios": {
-					"iphone": {"default":"/Users/puzzle/Desktop/png/320x480.png","retina55":"/Users/puzzle/Desktop/png/1242x2208.png","retina47":"/Users/puzzle/Desktop/png/750x1334.png","retina40":"/Users/puzzle/Desktop/png/640x1136.png","retina35":"/Users/puzzle/Desktop/png/640x960.png","retina55l":"/Users/puzzle/Desktop/png/2208x1242.png"
+					"iphone": {"default":"C:/Users/kkt/Desktop/png/320x480.png","retina55":"C:/Users/kkt/Desktop/png/1242x2208.png","retina47":"C:/Users/kkt/Desktop/png/750x1334.png","retina40":"C:/Users/kkt/Desktop/png/640x1136.png","retina35":"C:/Users/kkt/Desktop/png/640x960.png","retina55l":"C:/Users/kkt/Desktop/png/2208x1242.png"
 						 /*iPhone3启动图片选，分辨率：320x480*/
 						/*3.5英寸设备(iPhone4)启动图片，分辨率：640x960*/
 						
@@ -181,7 +181,7 @@
 						
 						
 					},
-					"ipad": {"portrait":"/Users/puzzle/Desktop/png/768x1004.png","portrait7":"/Users/puzzle/Desktop/png/768x1024.png","landscape":"/Users/puzzle/Desktop/png/1024x748.png","landscape7":"/Users/puzzle/Desktop/png/1024x768.png","portrait-retina":"/Users/puzzle/Desktop/png/1536x2008.png","portrait-retina7":"/Users/puzzle/Desktop/png/1536x2048.png","landscape-retina":"/Users/puzzle/Desktop/png/2048x1496.png","landscape-retina7":"/Users/puzzle/Desktop/png/2048x1536.png"
+					"ipad": {"portrait":"C:/Users/kkt/Desktop/png/768x1004.png","portrait7":"C:/Users/kkt/Desktop/png/768x1024.png","landscape":"C:/Users/kkt/Desktop/png/1024x748.png","landscape7":"C:/Users/kkt/Desktop/png/1024x768.png","portrait-retina":"C:/Users/kkt/Desktop/png/1536x2008.png","portrait-retina7":"C:/Users/kkt/Desktop/png/1536x2048.png","landscape-retina":"C:/Users/kkt/Desktop/png/2048x1496.png","landscape-retina7":"C:/Users/kkt/Desktop/png/2048x1536.png"
 						 /*iPad竖屏启动图片，分辨率：768x1004*/
 						/*iPad高分屏竖屏图片，分辨率：1536x2008*/
 						 /*iPad横屏启动图片，分辨率：1024x748*/
@@ -192,7 +192,7 @@
 						
 					}
 				},
-				"android": {"hdpi":"img/png/480x762.png","ldpi":"img/png/320x422.png","mdpi":"img/png/240x282.png","xhdpi":"img/png/720x1242.png","xxhdpi":"img/png/1080x1882.png"
+				"android": {"hdpi":"C:/Users/kkt/Desktop/png/480x762.png","ldpi":"C:/Users/kkt/Desktop/png/320x422.png","mdpi":"C:/Users/kkt/Desktop/png/240x282.png","xhdpi":"C:/Users/kkt/Desktop/png/720x1242.png","xxhdpi":"C:/Users/kkt/Desktop/png/1080x1882.png"
 					 /*普通屏启动图片，分辨率：240x282*/
 					 /*大屏启动图片，分辨率：320x442*/
 					 /*高分屏启动图片，分辨率：480x762*/
@@ -1851,7 +1851,9 @@
 					"js/template.js",
 					"img/back_icon.png"
 				],
-				"refer": [],
+				"refer": [
+					"message-details.html"
+				],
 				"priority": 0
 			},
 			"user-collect.html": {
@@ -1866,7 +1868,8 @@
 					"css/mui.min.css",
 					"img/hang.png",
 					"img/del.jpg",
-					"img/del_pop.png"
+					"img/del_pop.png",
+					"img/right.jpg"
 				],
 				"refer": [],
 				"priority": 0
@@ -1877,7 +1880,8 @@
 					"img/back_icon.png",
 					"js/common.js",
 					"js/mui.min.js",
-					"css/common.css"
+					"css/common.css",
+					"js/exif.js"
 				],
 				"refer": [],
 				"priority": 0
@@ -1899,7 +1903,8 @@
 					"css/mui.min.css",
 					"js/template.js",
 					"img/forword.png",
-					"img/del_pop.png"
+					"img/del_pop.png",
+					"js/exif.js"
 				],
 				"refer": [],
 				"priority": 0
@@ -1913,7 +1918,10 @@
 					"js/mui.min.js",
 					"css/common.css",
 					"css/mui.min.css",
-					"img/tip.jpg"
+					"img/tip.jpg",
+					"img/del_pop.png",
+					"img/guan.png",
+					"img/hang.png"
 				],
 				"refer": [],
 				"priority": 0
@@ -2024,6 +2032,17 @@
 				"priority": 0
 			},
 			"news.html": {
+				"resources": [
+					"img/back_icon.png",
+					"js/common.js",
+					"js/mui.min.js",
+					"css/common.css",
+					"css/mui.min.css"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"message-details.html": {
 				"resources": [
 					"img/back_icon.png",
 					"js/common.js",

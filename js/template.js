@@ -4,6 +4,7 @@ if (mui.os.android) {
 		aniShow = "slide-in-right";
 	}
 }
+/*子父模板*/
 var templates = {};
 var getTemplate = function(name, header, content) {
 	var template = templates[name]; //for same page judge
@@ -79,7 +80,7 @@ function lowerClient(template, href, headerWebview, contentWebview, aniShow) {
 		headerWebview.show(aniShow, 250);
 	}
 }
-
+/*点击判断进入新页面事件*/
 function hrefHander() {
 	var href = this.dataset.href;
 	var type = this.dataset.type;
@@ -109,14 +110,6 @@ function hrefHander() {
 				autoShow: false
 			}
 		})
-		if(href=='news.html'){
-			app.VW(href).addEventListener('loaded',function(){
-				mui.fire(app.VW(href),'newsId',{
-					title: _this.dataset.title,
-					newsId: _this.dataset.newsid
-				});
-			},false)
-		}
 	}else {
 		var template = getTemplate(type);
 		var headerWebview = template.header;

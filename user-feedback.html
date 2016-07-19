@@ -47,6 +47,7 @@ textarea {height: 125px;line-height: 21px;width: 100%;box-sizing: border-box;mar
 	</body>
 	<script src="js/mui.min.js"></script>
 	<script type="text/javascript" src="js/common.js" ></script>
+	<script type="text/javascript" src="js/exif.js" ></script>
 	<script type="text/javascript" charset="UTF-8">
 		mui.init();
 		
@@ -72,7 +73,7 @@ textarea {height: 125px;line-height: 21px;width: 100%;box-sizing: border-box;mar
 					type: "feedback",//api 图片干啥用的
 					uploadSuccess: uploadSuccess //上传成功回调 
 				}
-				upPicFromGallery.appendByGallery();
+				upPicFromGallery.selectMethod();
 				this.hadLoad=true;
 			}
 			

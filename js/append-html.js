@@ -26,6 +26,7 @@ function appendHtml(options,fnList) {//父元素，响应的的数据，注册�
 		if (j.status == 0) {
 			lose = '<span id="lose">已失效</span>';
 		}
+			/*销车大厅*/
 		if(type==='carList'){
 			html += '<li class="car-item" data-carId="'+j.carId+'">'+
 						'<div style="background-image:url(' + j.pic + ')"/></div>'+
@@ -36,6 +37,7 @@ function appendHtml(options,fnList) {//父元素，响应的的数据，注册�
 							'<div><h2 class="b guan" >'+(parseInt(j.officalPrice )/ 10000)+'万元</h2><h5 class="b hang">'+ price +'</h5></div>'+
 						'</div>'+
 					'</li>';
+				/*我的销车*/
 		}else if(type==='myCar'){
 			html += '<li class="car-item" data-orderId="'+j.orderId+'" data-buryerId="'+j.buyerId+'" data-deposit="'+j.sellerDeposit+'">'+
 						'<ul class="pz-ul"><li><h3>'+(j.orderSn?('订单号：'+j.orderSn):'')+'</h3><h4>'+(j.statusRemark?j.statusRemark:'')+'</h4></li></ul>'+
@@ -59,7 +61,7 @@ function appendHtml(options,fnList) {//父元素，响应的的数据，注册�
 						})
 						new_array.forEach(function(item,idx){
 							if(item=='contact_buyer'){
-								html+='<div class="pz-btn contact-buyer" data-tel="tel:'+j.buyerPhone+'">联系买家</div>';flag=true;
+								html+='<div class="pz-btn contact-buyer" data-tel="'+j.buyerPhone+'">联系买家</div>';flag=true;
 							}else if(item=='notify_receive'){
 								html+='<div class="pz-btn notify-receive">提醒收货</div>';flag=true;
 							}else if(item=='accept'){
@@ -75,6 +77,7 @@ function appendHtml(options,fnList) {//父元素，响应的的数据，注册�
 						}
 					}
 				html += '</li>';
+				/*我的收藏*/
 		}else if(type==='myFavs'){
 			html += '<li data-collectid="'+j.collectId+'" class="car-item" data-carId="'+j.carId+'">'+
 						'<div style="background-image:url(' + j.pic + ')"/></div>'+
@@ -85,6 +88,7 @@ function appendHtml(options,fnList) {//父元素，响应的的数据，注册�
 							'<div><h2 class="b guan officalPrice" >' + (parseInt(j.officalPrice )/ 10000) + '万元</h2><h5 data-collectid="'+j.collectId+'" class="del"></h5><h5 class="b hang saleAmount">' + price +'</h5></div>' +
 						'</div>'+
 					'</li>';
+					/*特卖会*/
 		}else if(type==='specialList'){
 			var pos='r',favs='favs';
 			if(idx%2==0){
