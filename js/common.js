@@ -1,5 +1,5 @@
 var base;
-var _use='';
+var _use='w';
 if(_use=='w'){
 	base='http://192.168.1.92:9080';
 }else if(_use=='254'){

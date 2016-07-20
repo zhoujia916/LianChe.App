@@ -230,7 +230,7 @@ body,html{height:100%;width: 100%;overflow: ;}
 			var html='',temp = document.createDocumentFragment();
 			var carArray=data||[];
 			carArray.forEach(function(j,idx){
-				var desc = j.car.catName + '|' + j.car.attr.outsideColor; 
+				var desc = j.car.carName + '|' + j.car.attr.outsideColor; 
 				price = '',config = '';
 				if(j.car.attr.salePriceType==2){
 					if (j.car.attr.quoteType == 1) {
